@@ -42,7 +42,7 @@ export function TenantBreadcrumb() {
   });
 
   return (
-    <Breadcrumb className="mb-4">
+    <Breadcrumb className="mb-4 sticky top-0 z-20 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-100">
       <BreadcrumbList>
         {/* <BreadcrumbItem>
           <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>

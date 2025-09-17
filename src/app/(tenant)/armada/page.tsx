@@ -1,6 +1,5 @@
 import { ArmadaSummaryStats } from "@/components/tenant/ArmadaSummaryStats";
 import { ArmadaTableContainer } from "@/components/tenant/ArmadaTableContainer";
-import { ArmadaTypeLegend } from "@/components/tenant/ArmadaTypeLegend";
 import { TenantBreadcrumb } from "@/components/tenant/TenantBreadcrumb";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
 import { TenantSidebar } from "@/components/tenant/TenantSidebar";
@@ -13,12 +12,12 @@ export default function ArmadaPage() {
         <div className="md:hidden p-4"><TenantMobileNav /></div>
         <main className="container mx-auto px-4 py-8">
           <TenantBreadcrumb />
-          <h1 className="text-2xl font-bold text-blue-700 mb-4">Manajemen Armada</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">Manajemen Armada</h1>
           <p className="mb-6 text-gray-700">Kelola data bus, status operasional, dan detail armada Anda di sini.</p>
 
           {/* Statistik dan legend tetap di page agar global */}
           <ArmadaSummaryStats stats={{ total: 10, aktif: 6, maintenance: 2, nonaktif: 2 }} />
-          <ArmadaTypeLegend />
+          {/* <ArmadaTypeLegend /> */}
 
           {/* Semua logic table, filter, pagination, bulk actions di-handle di container */}
           <ArmadaTableContainer />

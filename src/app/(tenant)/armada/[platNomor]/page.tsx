@@ -11,7 +11,11 @@ export default function ArmadaDetailPage({ params }: { params: { platNomor: stri
         <div className="md:hidden p-4"><TenantMobileNav /></div>
         <main className="container mx-auto px-4 py-8">
           <TenantBreadcrumb />
-          <ArmadaDetail platNomor={params.platNomor} />
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 tracking-tight">Detail Armada</h1>
+          <p className="text-gray-500 mb-6">Berikut adalah detail informasi armada.</p>
+          <div className="max-w-2xl">
+            <ArmadaDetail platNomor={params.platNomor} />
+          </div>
         </main>
       </div>
     </div>

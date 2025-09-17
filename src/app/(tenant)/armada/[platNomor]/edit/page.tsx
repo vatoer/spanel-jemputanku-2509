@@ -38,7 +38,8 @@ export default function EditArmadaPage({ params }: { params: { platNomor: string
         <div className="md:hidden p-4"><TenantMobileNav /></div>
         <main className="container mx-auto px-4 py-8">
           <TenantBreadcrumb />
-          <h1 className="text-2xl font-bold text-blue-700 mb-4">Edit Detail Armada</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2 tracking-tight">Edit Detail Armada</h1>
+          <p className="text-gray-500 mb-6">Perbarui informasi armada di bawah ini.</p>
           <div className="max-w-2xl">
             <ArmadaForm onSubmit={handleSubmit} />
           </div>

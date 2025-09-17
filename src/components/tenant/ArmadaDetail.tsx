@@ -1,17 +1,18 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Armada } from "@/schema/armada";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { ArmadaFormValues } from "./ArmadaForm";
 
 type ArmadaDetailProps = {
   platNomor: string;
 };
 
 // Dummy data, replace with real fetch logic as needed
-const dummyData: ArmadaFormValues = {
+const dummyData: Armada = {
   platNomor: "B 1234 CD",
   tipe: "Bus Besar",
   kapasitas: 45,
@@ -49,7 +50,7 @@ const dummyDriverList = [
 
 export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
   // Ganti dengan fetch data by platNomor
-  const [data, setData] = useState<ArmadaFormValues>(dummyData);
+  const [data, setData] = useState<Armada>(dummyData);
   const router = useRouter();
   const [photoIdx, setPhotoIdx] = useState(0);
   const [photos, setPhotos] = useState(dummyPhotos);
@@ -71,8 +72,7 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
 
   return (
     <section className="bg-white rounded-xl shadow p-8 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-blue-700">Detail Armada</h2>
+      <div className="flex items-center justify-end mb-4">
         <Button variant="outline" onClick={() => router.push(`/armada/${platNomor}/edit`)}>
           Edit
         </Button>
@@ -101,6 +101,14 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
 
       {/* Data Armada */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="md:col-span-2 mb-2 flex justify-end">
+          <Link
+            href={`/armada/${platNomor}/riwayat`}
+            className="text-blue-600 hover:underline text-sm font-medium flex items-center gap-1"
+          >
+            <span>Riwayat Pemeliharaan & Perbaikan</span>
+          </Link>
+        </div>
         <div>
           <div className="text-gray-500 text-sm">Plat Nomor</div>
           <div className="font-semibold text-lg">{data.platNomor}</div>

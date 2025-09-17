@@ -80,7 +80,7 @@ export function ArmadaFilterBar({ filters, onFilterChange }: ArmadaFilterBarProp
         </select>
       </div>
       <div className="flex gap-2">
-        <button className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Cari</button>
+        <button className="px-3 py-2 rounded-lg border border-blue-600 text-blue-600 bg-white hover:bg-blue-50">Cari</button>
       </div>
     </div>
   );

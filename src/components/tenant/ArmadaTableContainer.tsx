@@ -4,7 +4,7 @@ import { ArmadaBulkActions } from "./ArmadaBulkActions";
 import { ArmadaEmptyState } from "./ArmadaEmptyState";
 import { ArmadaFilterBar } from "./ArmadaFilterBar";
 import { ArmadaPagination } from "./ArmadaPagination";
-import { ArmadaTable } from "./ArmadaTable";
+import { ArmadaTanstackTable } from "./ArmadaTanstackTable";
 
 // Dummy data
 const dummyRows = [
@@ -41,7 +41,8 @@ export function ArmadaTableContainer() {
         <ArmadaEmptyState />
       ) : (
         <>
-          <ArmadaTable />
+          {/* <ArmadaTable /> */}
+          <ArmadaTanstackTable />
           <ArmadaPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}

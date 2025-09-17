@@ -1,4 +1,6 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard" },
@@ -11,7 +13,7 @@ const navItems = [
 ];
 
 export function TenantSidebar() {
-  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+  const pathname = usePathname();
   return (
     <aside className="bg-white shadow h-screen w-64 flex-shrink-0 hidden md:flex flex-col sticky top-0 z-40">
       <div className="h-20 flex items-center justify-center border-b">
@@ -31,3 +33,4 @@ export function TenantSidebar() {
     </aside>
   );
 }
+
