@@ -1,0 +1,310 @@
+[
+  {
+    "id": 1,
+    "nama": "Transjakarta Koridor 1 (Blok M - Kota)",
+    "warna": "#2563eb",
+    "polyline": [
+      {
+        "lat": -6.244669,
+        "lng": 106.799633,
+        "nama": "Blok M"
+      },
+      {
+        "lat": -6.23827,
+        "lng": 106.812583,
+        "nama": "Sisingamangaraja"
+      },
+      {
+        "lat": -6.227728,
+        "lng": 106.819839,
+        "nama": "Bundaran Senayan"
+      },
+      {
+        "lat": -6.22065,
+        "lng": 106.820839,
+        "nama": "Polda Metro"
+      },
+      {
+        "lat": -6.20876,
+        "lng": 106.820839,
+        "nama": "Bendungan Hilir"
+      },
+      {
+        "lat": -6.2009,
+        "lng": 106.820839,
+        "nama": "Karet"
+      },
+      {
+        "lat": -6.1938,
+        "lng": 106.820839,
+        "nama": "Setiabudi"
+      },
+      {
+        "lat": -6.187,
+        "lng": 106.820839,
+        "nama": "Dukuh Atas"
+      },
+      {
+        "lat": -6.182,
+        "lng": 106.820839,
+        "nama": "Tosari"
+      },
+      {
+        "lat": -6.177,
+        "lng": 106.820839,
+        "nama": "Bundaran HI"
+      },
+      {
+        "lat": -6.17,
+        "lng": 106.820839,
+        "nama": "Sarinah"
+      },
+      {
+        "lat": -6.163,
+        "lng": 106.820839,
+        "nama": "Monas"
+      },
+      {
+        "lat": -6.157,
+        "lng": 106.820839,
+        "nama": "Harmoni"
+      },
+      {
+        "lat": -6.146,
+        "lng": 106.820839,
+        "nama": "Sawah Besar"
+      },
+      {
+        "lat": -6.14,
+        "lng": 106.820839,
+        "nama": "Mangga Besar"
+      },
+      {
+        "lat": -6.137,
+        "lng": 106.820839,
+        "nama": "Olimo"
+      },
+      {
+        "lat": -6.134,
+        "lng": 106.820839,
+        "nama": "Glodok"
+      },
+      {
+        "lat": -6.132,
+        "lng": 106.820839,
+        "nama": "Kota"
+      },
+      {
+        "lat": -6.129,
+        "lng": 106.820839,
+        "nama": "Terminal Kota"
+      }
+    ],
+    "directions": [
+      {
+        "lat": -6.244669,
+        "lng": 106.799633,
+        "nama": "Blok M"
+      },
+      {
+        "lat": -6.23827,
+        "lng": 106.812583,
+        "nama": "Sisingamangaraja"
+      },
+      {
+        "lat": -6.227728,
+        "lng": 106.819839,
+        "nama": "Bundaran Senayan"
+      },
+      {
+        "lat": -6.22065,
+        "lng": 106.820839,
+        "nama": "Polda Metro"
+      },
+      {
+        "lat": -6.20876,
+        "lng": 106.820839,
+        "nama": "Bendungan Hilir"
+      },
+      {
+        "lat": -6.2009,
+        "lng": 106.820839,
+        "nama": "Karet"
+      },
+      {
+        "lat": -6.1938,
+        "lng": 106.820839,
+        "nama": "Setiabudi"
+      },
+      {
+        "lat": -6.187,
+        "lng": 106.820839,
+        "nama": "Dukuh Atas"
+      },
+      {
+        "lat": -6.182,
+        "lng": 106.820839,
+        "nama": "Tosari"
+      },
+      {
+        "lat": -6.177,
+        "lng": 106.820839,
+        "nama": "Bundaran HI"
+      },
+      {
+        "lat": -6.17,
+        "lng": 106.820839,
+        "nama": "Sarinah"
+      },
+      {
+        "lat": -6.163,
+        "lng": 106.820839,
+        "nama": "Monas"
+      },
+      {
+        "lat": -6.157,
+        "lng": 106.820839,
+        "nama": "Harmoni"
+      },
+      {
+        "lat": -6.146,
+        "lng": 106.820839,
+        "nama": "Sawah Besar"
+      },
+      {
+        "lat": -6.14,
+        "lng": 106.820839,
+        "nama": "Mangga Besar"
+      },
+      {
+        "lat": -6.137,
+        "lng": 106.820839,
+        "nama": "Olimo"
+      },
+      {
+        "lat": -6.134,
+        "lng": 106.820839,
+        "nama": "Glodok"
+      },
+      {
+        "lat": -6.132,
+        "lng": 106.820839,
+        "nama": "Kota"
+      },
+      {
+        "lat": -6.129,
+        "lng": 106.820839,
+        "nama": "Terminal Kota"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "nama": "Transjakarta Koridor 6 (Ragunan - Dukuh Atas)",
+    "warna": "#22c55e",
+    "polyline": [
+      {
+        "lat": -6.3048,
+        "lng": 106.820839,
+        "nama": "Ragunan"
+      },
+      {
+        "lat": -6.292,
+        "lng": 106.820839,
+        "nama": "Pejaten"
+      },
+      {
+        "lat": -6.282,
+        "lng": 106.820839,
+        "nama": "Pasar Minggu"
+      },
+      {
+        "lat": -6.272,
+        "lng": 106.820839,
+        "nama": "Duren Tiga"
+      },
+      {
+        "lat": -6.262,
+        "lng": 106.820839,
+        "nama": "Mampang"
+      },
+      {
+        "lat": -6.252,
+        "lng": 106.820839,
+        "nama": "Kuningan Barat"
+      },
+      {
+        "lat": -6.242,
+        "lng": 106.820839,
+        "nama": "Kuningan Timur"
+      },
+      {
+        "lat": -6.232,
+        "lng": 106.820839,
+        "nama": "Setiabudi Utara"
+      },
+      {
+        "lat": -6.222,
+        "lng": 106.820839,
+        "nama": "Dukuh Atas"
+      },
+      {
+        "lat": -6.187,
+        "lng": 106.820839,
+        "nama": "Dukuh Atas (Koridor 1)"
+      }
+    ],
+    "directions": [
+      {
+        "lat": -6.3048,
+        "lng": 106.820839,
+        "nama": "Ragunan"
+      },
+      {
+        "lat": -6.292,
+        "lng": 106.820839,
+        "nama": "Pejaten"
+      },
+      {
+        "lat": -6.282,
+        "lng": 106.820839,
+        "nama": "Pasar Minggu"
+      },
+      {
+        "lat": -6.272,
+        "lng": 106.820839,
+        "nama": "Duren Tiga"
+      },
+      {
+        "lat": -6.262,
+        "lng": 106.820839,
+        "nama": "Mampang"
+      },
+      {
+        "lat": -6.252,
+        "lng": 106.820839,
+        "nama": "Kuningan Barat"
+      },
+      {
+        "lat": -6.242,
+        "lng": 106.820839,
+        "nama": "Kuningan Timur"
+      },
+      {
+        "lat": -6.232,
+        "lng": 106.820839,
+        "nama": "Setiabudi Utara"
+      },
+      {
+        "lat": -6.222,
+        "lng": 106.820839,
+        "nama": "Dukuh Atas"
+      },
+      {
+        "lat": -6.187,
+        "lng": 106.820839,
+        "nama": "Dukuh Atas (Koridor 1)"
+      }
+    ]
+  }
+]

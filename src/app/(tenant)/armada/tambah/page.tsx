@@ -1,15 +1,17 @@
 
-import { ArmadaForm, ArmadaFormValues } from "@/components/tenant/ArmadaForm";
+"use client";
+import { ArmadaForm } from "@/components/tenant/ArmadaForm";
 import { TenantBreadcrumb } from "@/components/tenant/TenantBreadcrumb";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
 import { TenantSidebar } from "@/components/tenant/TenantSidebar";
+import { Armada } from "@/schema/armada";
 import { useRouter } from "next/navigation";
 
 
 export default function TambahArmadaPage() {
   const router = useRouter();
 
-  function handleSubmit(data: ArmadaFormValues) {
+  function handleSubmit(data: Armada) {
     // TODO: Integrate with backend API
     alert("Data armada berhasil disubmit: " + JSON.stringify(data, null, 2));
     router.push("/armada");

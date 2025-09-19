@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "nama": "Koridor 1 (Blok M - Kota)",
+    "warna": "#2563eb",
+    "stops": [
+      { "lat": -6.244669, "lng": 106.799633, "nama": "Blok M" },
+      { "lat": -6.238270, "lng": 106.812583, "nama": "Sisingamangaraja" },
+      { "lat": -6.227728, "lng": 106.819839, "nama": "Bundaran Senayan" },
+      { "lat": -6.132000, "lng": 106.820839, "nama": "Kota" }
+    ]
+  },
+  {
+    "id": 2,
+    "nama": "Koridor 6 (Ragunan - Dukuh Atas)",
+    "warna": "#22c55e",
+    "stops": [
+      { "lat": -6.304800, "lng": 106.820839, "nama": "Ragunan" },
+      { "lat": -6.262000, "lng": 106.820839, "nama": "Mampang" },
+      { "lat": -6.232000, "lng": 106.820839, "nama": "Setiabudi Utara" },
+      { "lat": -6.187000, "lng": 106.820839, "nama": "Dukuh Atas" }
+    ]
+  },
+  {
+    "id": 3,
+    "nama": "Koridor 9 (Pinang Ranti - Pluit)",
+    "warna": "#f59e42",
+    "stops": [
+      { "lat": -6.265000, "lng": 106.885000, "nama": "Pinang Ranti" },
+      { "lat": -6.220000, "lng": 106.870000, "nama": "Cawang UKI" },
+      { "lat": -6.180000, "lng": 106.820000, "nama": "Semanggi" },
+      { "lat": -6.125000, "lng": 106.790000, "nama": "Pluit" }
+    ]
+  }
+]
