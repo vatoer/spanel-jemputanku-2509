@@ -28,8 +28,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  UserRole   UserRole[]
-  UserTenant UserTenant[]
+  UserRole      UserRole[]
+  UserTenant    UserTenant[]
+  DriverVehicle DriverVehicle[]
+  Ride          Ride[]
+  VehicleDriver Vehicle[] // Vehicles where this user is the assigned driver
+
+  // Live tracking relations
+  tripDriver   Trip[]        @relation("TripDriver")
+  driverShifts DriverShift[] @relation("DriverShifts")
 
   @@map("users")
 }
@@ -146,12 +153,17 @@ model UserRole {
 }
 
 model Tenant {
-  id         String       @id @default(cuid())
-  name       String       @unique
-  domain     String       @unique
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @updatedAt @map("updated_at")
-  UserTenant UserTenant[]
+  id        String       @id @default(cuid())
+  name      String       @unique
+  domain    String       @unique
+  status    TenantStatus @default(ACTIVE)
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  UserTenant    UserTenant[]
+  Vehicle       Vehicle[]
+  Route         Route[]
+  subscriptions TenantSubscription[]
 
   @@map("tenants")
 }
@@ -164,6 +176,104 @@ model UserTenant {
 
   @@id([userId, tenantId])
   @@map("user_tenants")
+}
+
+enum TenantStatus {
+  ACTIVE // Active and operational
+  SUSPENDED // Temporarily disabled (payment issues, etc.)
+  TRIAL // Trial period
+  EXPIRED // Subscription expired
+  CANCELLED // Permanently cancelled
+}
+
+// Subscription Plans
+model SubscriptionPlan {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., "Basic", "Pro", "Enterprise"
+  description String?
+  price       Float // Monthly price
+  currency    String   @default("USD")
+  maxVehicles Int?     @map("max_vehicles")
+  maxDrivers  Int?     @map("max_drivers")
+  maxRoutes   Int?     @map("max_routes")
+  features    Json? // JSON array of features
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  subscriptions TenantSubscription[]
+
+  @@map("subscription_plans")
+}
+
+// Tenant Subscriptions with historical tracking
+model TenantSubscription {
+  id                 String             @id @default(cuid())
+  tenantId           String             @map("tenant_id")
+  planId             String             @map("plan_id")
+  status             SubscriptionStatus @default(ACTIVE)
+  startDate          DateTime           @map("start_date")
+  endDate            DateTime?          @map("end_date")
+  trialEndsAt        DateTime?          @map("trial_ends_at")
+  cancelledAt        DateTime?          @map("cancelled_at")
+  cancellationReason String?            @map("cancellation_reason")
+  autoRenew          Boolean            @default(true) @map("auto_renew")
+
+  // Snapshot of plan limits at subscription time (for historical accuracy)
+  maxVehiclesAtTime Int?   @map("max_vehicles_at_time")
+  maxDriversAtTime  Int?   @map("max_drivers_at_time")
+  maxRoutesAtTime   Int?   @map("max_routes_at_time")
+  priceAtTime       Float? @map("price_at_time")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant   Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan     SubscriptionPlan      @relation(fields: [planId], references: [id])
+  payments SubscriptionPayment[]
+
+  @@map("tenant_subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE // Currently active
+  TRIAL // In trial period
+  PAST_DUE // Payment overdue
+  CANCELLED // Cancelled (still active until end date)
+  EXPIRED // Expired and inactive
+  PAUSED // Temporarily paused
+}
+
+// Payment Records
+model SubscriptionPayment {
+  id                 String        @id @default(cuid())
+  subscriptionId     String        @map("subscription_id")
+  amount             Float
+  currency           String        @default("IDR")
+  status             PaymentStatus @default(PENDING)
+  paymentMethod      String?       @map("payment_method") // "credit_card", "bank_transfer", etc.
+  transactionId      String?       @map("transaction_id") // External payment gateway ID
+  paidAt             DateTime?     @map("paid_at")
+  dueDate            DateTime      @map("due_date")
+  billingPeriodStart DateTime      @map("billing_period_start")
+  billingPeriodEnd   DateTime      @map("billing_period_end")
+  invoice            String? // Invoice number or URL
+  failureReason      String?       @map("failure_reason")
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+
+  subscription TenantSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("subscription_payments")
+}
+
+enum PaymentStatus {
+  PENDING // Payment initiated but not completed
+  PROCESSING // Payment being processed
+  PAID // Successfully paid
+  FAILED // Payment failed
+  REFUNDED // Payment refunded
+  CANCELLED // Payment cancelled
 }
 
 enum EnumUserRole {
@@ -180,4 +290,323 @@ enum EnumUserRole {
   AUDITOR
   SUPER_ADMIN
   API_CLIENT
+}
+
+model Vehicle {
+  id                      String                   @id @default(cuid())
+  tenantId                String                   @map("tenant_id")
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  licensePlate            String                   @unique
+  model                   String
+  manufacturer            String
+  year                    Int
+  color                   String
+  capacity                Int
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  driver                  User?                    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  driverId                String?                  @map("driver_id")
+  drivers                 DriverVehicle[]
+  rides                   Ride[]
+  vehicleRouteAssignments VehicleRouteAssignment[]
+  serviceRecords          VehicleServiceRecord[]
+
+  // Live tracking relations
+  trips        Trip[]
+  locations    VehicleLocation[]
+  driverShifts DriverShift[]
+}
+
+model VehicleType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("vehicle_types")
+}
+
+// to log which vehicle is assigned to which route
+model VehicleRouteAssignment {
+  vehicleId  String   @map("vehicle_id")
+  routeId    String   @map("route_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  vehicle      Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  route        Route     @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  assignedBy   String    @map("assigned_by")
+  unassignedAt DateTime? @map("unassigned_at")
+  unassignedBy String?   @map("unassigned_by")
+  isActive     Boolean   @default(true) @map("is_active")
+
+  @@id([vehicleId, routeId])
+  @@map("vehicle_assignments")
+}
+
+// to log history of which driver is assigned to which vehicle
+model DriverVehicle {
+  driverId  String  @map("driver_id")
+  vehicleId String  @map("vehicle_id")
+  driver    User    @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@id([driverId, vehicleId])
+  @@map("driver_vehicles")
+}
+
+// Consolidated service and maintenance history
+model VehicleServiceRecord {
+  id          String          @id @default(cuid())
+  vehicleId   String          @map("vehicle_id")
+  type        ServiceType     @default(MAINTENANCE)
+  category    ServiceCategory @default(GENERAL)
+  title       String // e.g., "Oil Change", "Brake Inspection", "AC Repair"
+  description String? // Detailed notes
+  serviceDate DateTime        @map("service_date")
+  cost        Float? // Service cost
+  mileage     Int? // Vehicle mileage at service
+  status      ServiceStatus   @default(COMPLETED)
+  nextDueDate DateTime?       @map("next_due_date") // When next service is due
+  vendor      String? // Service provider/workshop
+  invoice     String? // Invoice number or reference
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_service_records")
+}
+
+enum ServiceType {
+  MAINTENANCE // Regular maintenance
+  REPAIR // Fixing issues
+  INSPECTION // Safety/compliance checks
+  UPGRADE // Improvements/modifications
+}
+
+enum ServiceCategory {
+  ENGINE // Engine related
+  TRANSMISSION // Transmission work
+  BRAKES // Brake system
+  TIRES // Tire services
+  ELECTRICAL // Electrical systems
+  AC_HEATING // Climate control
+  BODY // Body work/paint
+  INTERIOR // Interior repairs
+  SAFETY // Safety equipment
+  GENERAL // General maintenance
+}
+
+enum ServiceStatus {
+  SCHEDULED // Planned but not done
+  IN_PROGRESS // Currently being serviced
+  COMPLETED // Finished
+  CANCELLED // Cancelled
+  OVERDUE // Past due date
+}
+
+model Route {
+  id            String   @id @default(cuid())
+  tenantId      String   @map("tenant_id")
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  originId      String?  @map("origin_id")
+  destinationId String?  @map("destination_id")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  RoutePoint              RoutePoint[]
+  origin                  RoutePoint?              @relation("RouteOrigin", fields: [originId], references: [id])
+  destination             RoutePoint?              @relation("RouteDestination", fields: [destinationId], references: [id])
+  vehicleRouteAssignments VehicleRouteAssignment[]
+
+  // Live tracking relations
+  trips Trip[]
+
+  @@map("routes")
+}
+
+model RoutePoint {
+  id        String         @id @default(cuid())
+  routeId   String         @map("route_id")
+  latitude  Float
+  longitude Float
+  order     Int // Sequential order in route
+  name      String? // e.g., "Bekasi Timur Station", "Terminal Pejambon"
+  type      RoutePointType @default(STOP)
+  isActive  Boolean        @default(true) @map("is_active")
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  route              Route   @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  routeAsOrigin      Route[] @relation("RouteOrigin")
+  routeAsDestination Route[] @relation("RouteDestination")
+  rideAsOrigin       Ride[]  @relation("RideOrigin")
+  rideAsDestination  Ride[]  @relation("RideDestination")
+
+  // Live tracking relations
+  tripStops TripStop[]
+
+  @@unique([routeId, order]) // Ensure unique order per route
+  @@map("route_points")
+}
+
+enum RoutePointType {
+  ORIGIN
+  STOP
+  DESTINATION
+}
+
+model Ride {
+  id        String     @id @default(cuid())
+  userId    String
+  vehicleId String
+  startTime DateTime   @map("start_time")
+  endTime   DateTime   @map("end_time")
+  status    RideStatus @default(BOOKED)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle       Vehicle     @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  origin        RoutePoint? @relation(fields: [originId], references: [id], name: "RideOrigin")
+  originId      String?
+  destination   RoutePoint? @relation(fields: [destinationId], references: [id], name: "RideDestination")
+  destinationId String?
+
+  // Live tracking relations
+  trip   Trip?   @relation("TripRides", fields: [tripId], references: [id])
+  tripId String? @map("trip_id")
+
+  @@map("rides")
+}
+
+enum RideStatus {
+  BOOKED
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Trip Management for Live Tracking
+model Trip {
+  id               String     @id @default(cuid())
+  routeId          String     @map("route_id")
+  vehicleId        String     @map("vehicle_id")
+  driverId         String     @map("driver_id")
+  scheduledStart   DateTime   @map("scheduled_start")
+  scheduledEnd     DateTime   @map("scheduled_end")
+  actualStart      DateTime?  @map("actual_start")
+  actualEnd        DateTime?  @map("actual_end")
+  status           TripStatus @default(SCHEDULED)
+  passengerCount   Int        @default(0) @map("passenger_count")
+  maxCapacity      Int        @map("max_capacity")
+  currentStopIndex Int        @default(0) @map("current_stop_index") // Current position on route
+  delay            Int        @default(0) // Delay in minutes
+  notes            String?
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  route     Route             @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  vehicle   Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driver    User              @relation(fields: [driverId], references: [id], onDelete: Cascade, name: "TripDriver")
+  rides     Ride[]            @relation("TripRides")
+  locations VehicleLocation[]
+  tripStops TripStop[]
+
+  @@map("trips")
+}
+
+enum TripStatus {
+  SCHEDULED // Trip is planned but not started
+  STARTED // Driver started the trip
+  IN_PROGRESS // Currently running
+  PAUSED // Temporarily stopped
+  COMPLETED // Successfully finished
+  CANCELLED // Cancelled before or during trip
+  DELAYED // Running behind schedule
+}
+
+// Real-time vehicle location tracking
+model VehicleLocation {
+  id        String   @id @default(cuid())
+  tripId    String   @map("trip_id")
+  vehicleId String   @map("vehicle_id")
+  latitude  Float
+  longitude Float
+  speed     Float? // km/h
+  heading   Float? // Compass direction (0-360)
+  accuracy  Float? // GPS accuracy in meters
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([tripId, timestamp])
+  @@index([vehicleId, timestamp])
+  @@map("vehicle_locations")
+}
+
+// Track stops during a trip
+model TripStop {
+  id                String     @id @default(cuid())
+  tripId            String     @map("trip_id")
+  routePointId      String     @map("route_point_id")
+  scheduledAt       DateTime   @map("scheduled_at")
+  arrivedAt         DateTime?  @map("arrived_at")
+  departedAt        DateTime?  @map("departed_at")
+  status            StopStatus @default(PENDING)
+  passengerBoarded  Int        @default(0) @map("passenger_boarded")
+  passengerAlighted Int        @default(0) @map("passenger_alighted")
+  delay             Int        @default(0) // Minutes late/early
+  notes             String?
+  createdAt         DateTime   @default(now()) @map("created_at")
+
+  // Relations
+  trip       Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  routePoint RoutePoint @relation(fields: [routePointId], references: [id])
+
+  @@unique([tripId, routePointId])
+  @@map("trip_stops")
+}
+
+enum StopStatus {
+  PENDING // Not reached yet
+  ARRIVED // Arrived at stop
+  DEPARTED // Left the stop
+  SKIPPED // Skipped this stop
+}
+
+// Driver check-in/check-out logs
+model DriverShift {
+  id         String      @id @default(cuid())
+  driverId   String      @map("driver_id")
+  vehicleId  String      @map("vehicle_id")
+  checkInAt  DateTime    @map("check_in_at")
+  checkOutAt DateTime?   @map("check_out_at")
+  status     ShiftStatus @default(ACTIVE)
+  location   String? // Check-in location
+  notes      String?
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  driver  User    @relation(fields: [driverId], references: [id], onDelete: Cascade, name: "DriverShifts")
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("driver_shifts")
+}
+
+enum ShiftStatus {
+  ACTIVE // Currently on duty
+  COMPLETED // Finished shift
+  BREAK // On break
+  EMERGENCY // Emergency stop
 }
