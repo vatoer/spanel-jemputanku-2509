@@ -76,6 +76,10 @@ export default function RutePage() {
     setShowStops(!showStops);
   };
 
+  const handleBack = () => {
+    router.push('/dashboard');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -83,6 +87,7 @@ export default function RutePage() {
         totalRoutes={ROUTES.length}
         activeRoutes={ROUTES.filter(r => r.status === 'active').length}
         onAddRoute={handleAddRoute}
+        onBack={handleBack}
       />
 
       {/* Desktop: Map + Stops / Mobile: Map Only */}
