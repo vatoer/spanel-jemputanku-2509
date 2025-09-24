@@ -158,5 +158,5 @@ export function AppleMapKitDirectionsViewer({ directions }: { directions: Direct
     ));
   }, [mapkitReady, directions]);
 
-  return <div ref={mapRef} style={{ width: "100%", height: 500 }} />;
+  return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
 }

@@ -1,4 +1,5 @@
 "use client"
+import { DirectionsJson } from "@/components/tenant/AppleMapKitDirectionsViewer";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
@@ -20,7 +21,7 @@ export default function RuteDetailPage({ params }: { params: { "kode-rute": stri
   const rute = ROUTES.find(r => r.code === kodeRute);
   const [editing, setEditing] = useState(false);
   // Load directions from public/rute-directions/line-[code].json, fallback to directions-example.json if not found
-  const [directions, setDirections] = useState<any>(null);
+  const [directions, setDirections] = useState<DirectionsJson | null>(null);
   useEffect(() => {
     async function fetchDirections() {
       try {
