@@ -1,6 +1,6 @@
 "use client"
 import { UnifiedLayout } from "@/components/layout/UnifiedLayout";
-import { DirectionsJson } from "@/components/tenant/AppleMapKitDirectionsViewer";
+import { DirectionJson } from "@/components/tenant/AppleMapKitDirectionsViewer";
 import { LAYOUT_PRESETS } from "@/types/layout";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ export default function RouteManagementPage() {
   const router = useRouter();
   const [selected, setSelected] = useState(ROUTES[0]);
   const [showStops, setShowStops] = useState(true);
-  const [directions, setDirections] = useState<DirectionsJson | null>(null);
+  const [directions, setDirections] = useState<DirectionJson | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState(0);

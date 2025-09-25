@@ -64,7 +64,7 @@ This directory contains modular, reusable components for the route management sy
 
 **Props**:
 - `selectedRoute`: Route - Current route for display
-- `directions`: DirectionsJson | null - Map directions data
+- `directions`: DirectionJson | null - Map directions data
 - `children?`: React.ReactNode - Overlay components
 
 ## Type Definitions

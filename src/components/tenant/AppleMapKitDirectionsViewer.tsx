@@ -16,7 +16,7 @@ export type Step = {
   instruction?: string;
 }
 export type StepPath = Array<{ latitude: number; longitude: number }>;
-export type DirectionsJson = {
+export type DirectionJson = {
   polyline: {
     origin: { coordinate: { latitude: number; longitude: number } };
     destination: { coordinate: { latitude: number; longitude: number } };
@@ -27,7 +27,7 @@ export type DirectionsJson = {
 };
 
 
-export function AppleMapKitDirectionsViewer({ directions }: { directions: DirectionsJson }) {
+export function AppleMapKitDirectionsViewer({ directions }: { directions: DirectionJson }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const [mapkitReady, setMapkitReady] = useState(!!(typeof window !== "undefined" && window.mapkit));

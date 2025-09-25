@@ -9,7 +9,7 @@ import {
   type Route,
   type Stop
 } from "@/components/route";
-import { DirectionsJson } from "@/components/tenant/AppleMapKitDirectionsViewer";
+import { DirectionJson } from "@/components/tenant/AppleMapKitDirectionsViewer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -27,7 +27,7 @@ export default function RutePage() {
   const isMobile = useIsMobile();
   const [selected, setSelected] = useState<Route>(ROUTES[0]);
   const [showStops, setShowStops] = useState(true);
-  const [directions, setDirections] = useState<DirectionsJson | null>(null);
+  const [directions, setDirections] = useState<DirectionJson | null>(null);
   
   // Demo stops data
   const demoStops: Stop[] = [

@@ -1,9 +1,9 @@
 "use client";
-import { AppleMapKitDirectionsViewer, DirectionsJson } from "@/components/tenant/AppleMapKitDirectionsViewer";
+import { AppleMapKitDirectionsViewer, DirectionJson } from "@/components/tenant/AppleMapKitDirectionsViewer";
 import { useEffect, useState } from "react";
 
 export default function ArmadaRutePage() {
-  const [directions, setDirections] = useState<DirectionsJson | null>(null);
+  const [directions, setDirections] = useState<DirectionJson | null>(null);
 
   useEffect(() => {
     fetch("/directions-example.json")

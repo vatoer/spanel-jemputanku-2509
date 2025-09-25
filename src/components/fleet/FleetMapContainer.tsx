@@ -1,4 +1,5 @@
 import { useIsMobile } from '@/hooks/use-mobile';
+import { DirectionJson } from '@/types/mapkit.types';
 import dynamic from 'next/dynamic';
 import React, { useMemo } from 'react';
 
@@ -35,12 +36,14 @@ interface FleetVehicle {
 
 interface FleetMapContainerProps {
   vehicles: FleetVehicle[];
+  directions?: DirectionJson[];
   selectedVehicle: string | null;
   children?: React.ReactNode;
 }
 
 export const FleetMapContainer: React.FC<FleetMapContainerProps> = ({
   vehicles,
+  directions,
   selectedVehicle,
   children
 }) => {
@@ -89,6 +92,7 @@ export const FleetMapContainer: React.FC<FleetMapContainerProps> = ({
         {markers.length > 0 ? (
           <AppleMapKitMap 
             markers={markers}
+            directions={[]}
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
@@ -110,83 +114,39 @@ export const FleetMapContainer: React.FC<FleetMapContainerProps> = ({
         )}
       </div>
 
-      {/* Map Controls Overlay */}
+      {/* Simplified Live Indicator - Remove redundant vehicle counts */}
       <div className="absolute top-4 left-4 z-30">
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-sm">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-green-700 font-medium">Live Tracking</span>
-              </div>
-            </div>
-            <div className="text-xs text-gray-600">
-              {vehicles.length} vehicles • {vehicles.filter(v => v.status === 'active').length} active
-            </div>
-            <div className="text-xs text-blue-600">
-              🗺️ Apple MapKit JS
-            </div>
+        <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg px-3 py-2 shadow-sm">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-green-700 font-medium">Live</span>
           </div>
         </div>
       </div>
 
-      {/* Selected Vehicle Info Overlay */}
-      {selectedVehicle && (
-        <div className="absolute top-4 right-4 z-30 max-w-xs">
-          <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-lg">
-            {(() => {
-              const vehicle = vehicles.find(v => v.id === selectedVehicle);
-              return vehicle ? (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900 text-sm">{vehicle.name}</h3>
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      vehicle.status === 'active' ? 'bg-green-100 text-green-700' :
-                      vehicle.status === 'idle' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {vehicle.status.toUpperCase()}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="bg-gray-50 p-2 rounded">
-                      <div className="text-gray-500">Speed</div>
-                      <div className="font-semibold">{vehicle.speed} km/h</div>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded">
-                      <div className="text-gray-500">Passengers</div>
-                      <div className="font-semibold">{vehicle.passengers}/{vehicle.capacity}</div>
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-600">
-                    🗺️ {vehicle.route} • 👨‍💼 {vehicle.driver}
-                  </div>
-                </div>
-              ) : null;
-            })()}
+      {/* Remove Desktop Selected Vehicle Overlay - Info already shown in sidebar */}
+
+      {/* Simplified Legend - Remove redundant counts, focus on visual clarity */}
+      {!isMobile && (
+        <div className="absolute bottom-4 left-4 z-30">
+          <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg p-2 shadow-sm">
+            <div className="flex gap-3 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>Active</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <span>Idle</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <span>Maintenance</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
-
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-30">
-        <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg p-3 shadow-sm">
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span>Active ({vehicles.filter(v => v.status === 'active').length})</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <span>Idle ({vehicles.filter(v => v.status === 'idle').length})</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span>Maintenance ({vehicles.filter(v => v.status === 'maintenance').length})</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
 
 

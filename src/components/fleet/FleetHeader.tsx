@@ -50,25 +50,24 @@ export const FleetHeader: React.FC<FleetHeaderProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Fleet Stats - Desktop Only */}
-          {!isMobile && (
-            <div className="flex items-center gap-2">
-              <div className="bg-white/20 rounded px-1.5 py-0.5 text-center">
-                <div className="text-xs font-bold text-white">{activeVehicles}</div>
-                <div className="text-xs text-blue-100">Active</div>
-              </div>
-              <div className="bg-white/20 rounded px-1.5 py-0.5 text-center">
-                <div className="text-xs font-bold text-white">{totalPassengers}</div>
-                <div className="text-xs text-blue-100">Passengers</div>
-              </div>
+        <div className="flex items-center gap-3">
+          {/* Essential Stats Only */}
+          <div className="flex items-center gap-2 text-blue-100">
+            <div className="flex items-center gap-1">
+              <span className="text-xs">{activeVehicles}/{totalVehicles}</span>
+              <span className="text-xs opacity-75">active</span>
             </div>
-          )}
+            {!isMobile && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs">👥 {totalPassengers}</span>
+              </div>
+            )}
+          </div>
 
           {/* Live Status Indicator */}
           <div className="flex items-center gap-1">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-            <span className={`text-blue-100 font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>Live</span>
+            <span className={`text-green-100 font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>Live</span>
           </div>
         </div>
       </div>

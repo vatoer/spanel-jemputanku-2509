@@ -3,6 +3,7 @@ import { FleetHeader } from "@/components/fleet/FleetHeader";
 import { FleetMapContainer } from "@/components/fleet/FleetMapContainer";
 import { FleetSidebar } from "@/components/fleet/FleetSidebar";
 import { FleetVehicle, VehicleCarousel } from "@/components/fleet/VehicleCarousel";
+import { DirectionJson } from "@/components/tenant/AppleMapKitMap";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -82,6 +83,20 @@ export default function LacakArmadaPage() {
   const [selectedVehicle, setSelectedVehicle] = useState<FleetVehicle | null>(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
+  // get rute data from API 
+  const [directions, setDirections] = useState<DirectionJson[]>([]);
+
+  // Fetch route data from API
+  const fetchRouteData = async () => {
+    try {
+      const response = await fetch("/api/rute");
+      const data = await response.json();
+      setDirections(data);
+    } catch (error) {
+      console.error("Error fetching route data:", error);
+    }
+  };
+
   // Auto-refresh every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -129,13 +144,21 @@ export default function LacakArmadaPage() {
             selectedVehicle={selectedVehicle?.id || null}
           />
           
-          {/* Mobile overlay for selected vehicle details */}
+          {/* Optimized Mobile Selected Vehicle Info */}
           {selectedVehicle && (
-            <div className="absolute bottom-4 left-4 right-4">
+            <div className="absolute bottom-20 left-4 right-4 z-40">
               <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <div className="font-medium text-gray-900">{selectedVehicle.name}</div>
+                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      selectedVehicle.status === 'active' ? 'bg-green-100 text-green-700' :
+                      selectedVehicle.status === 'idle' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {selectedVehicle.status === 'active' ? '🟢' : 
+                       selectedVehicle.status === 'idle' ? '🟡' : '🔴'}
+                    </div>
                   </div>
                   <button 
                     onClick={() => setSelectedVehicle(null)}
@@ -144,14 +167,18 @@ export default function LacakArmadaPage() {
                     ✕
                   </button>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <div>
-                    <span className="text-gray-600">👥 </span>
-                    <span className="font-medium">{selectedVehicle.passengers}/{selectedVehicle.capacity}</span>
+                <div className="grid grid-cols-3 gap-3 text-xs">
+                  <div className="text-center">
+                    <div className="text-gray-500">Speed</div>
+                    <div className="font-semibold">{selectedVehicle.speed} km/h</div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">🚄 </span>
-                    <span className="font-medium">{selectedVehicle.speed} km/h</span>
+                  <div className="text-center">
+                    <div className="text-gray-500">Passengers</div>
+                    <div className="font-semibold">{selectedVehicle.passengers}/{selectedVehicle.capacity}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-gray-500">Line</div>
+                    <div className="font-semibold">{selectedVehicle.routeCode}</div>
                   </div>
                 </div>
               </div>

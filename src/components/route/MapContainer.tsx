@@ -1,4 +1,4 @@
-import { DirectionsJson } from '@/components/tenant/AppleMapKitDirectionsViewer';
+import { DirectionJson } from '@/components/tenant/AppleMapKitDirectionsViewer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -11,7 +11,7 @@ const AppleMapKitDirectionsViewer = dynamic(
 
 interface MapContainerProps {
   selectedRoute: Route;
-  directions: DirectionsJson | null;
+  directions: DirectionJson | null;
   children?: React.ReactNode; // For overlays like MobileOverlay
 }
 

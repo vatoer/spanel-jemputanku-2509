@@ -1,4 +1,6 @@
 "use client";
+import { Marker } from "@/types/map.types";
+import { DirectionJson } from "@/types/mapkit.types";
 import { useEffect, useRef, useState } from "react";
 
 // Apple MapKit JS types for window
@@ -8,12 +10,12 @@ declare global {
   }
 }
 
-// Props: armada = [{ id, nama, lat, lng, rute: [{lat, lng, nama}] }]
+interface AppleMapKitMapProps {
+  markers: Marker[];
+  directions?: DirectionJson[];
+}
 
-type Marker = { lat: number; lng: number; title?: string; icon?: string };
-type Route = { from: string; to: string; polyline: { lat: number; lng: number }[] };
-
-export function AppleMapKitMap({ markers, routes }: { markers: Marker[]; routes?: Route[] }) {
+export function AppleMapKitMap({ markers, directions }: AppleMapKitMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const [mapkitReady, setMapkitReady] = useState(!!(typeof window !== "undefined" && window.mapkit));
@@ -94,24 +96,42 @@ export function AppleMapKitMap({ markers, routes }: { markers: Marker[]; routes?
       mapInstance.current.addAnnotation(annotation);
     });
     // Draw polylines for each route
-    if (routes && routes.length) {
-      mapInstance.current.removeOverlays(mapInstance.current.overlays);
-      routes.forEach((route) => {
-        if (route.polyline && route.polyline.length > 1) {
-          const coords = route.polyline.map((p) => new window.mapkit.Coordinate(p.lat, p.lng));
-          const polyline = new window.mapkit.PolylineOverlay(coords);
-          polyline.style = new window.mapkit.Style({
-            lineWidth: 4,
-            strokeColor: "#22c55e",
-            lineJoin: "round",
-            lineCap: "round",
-            opacity: 0.85,
+    if (directions && directions.length) {
+      directions.forEach((direction) => {
+        if(direction.polyline && direction.polyline.stepPaths) {
+
+          // Add origin/destination markers
+          mapInstance.current.addAnnotation(new window.mapkit.MarkerAnnotation(
+            new window.mapkit.Coordinate(direction.polyline.origin.coordinate.latitude, direction.polyline.origin.coordinate.longitude),
+            { title: "Origin", color: "#22c55e" }
+          ));
+          mapInstance.current.addAnnotation(new window.mapkit.MarkerAnnotation(
+            new window.mapkit.Coordinate(direction.polyline.destination.coordinate.latitude, direction.polyline.destination.coordinate.longitude),
+            { title: "Destination", color: "#ef4444" }
+          ));
+
+          // Draw route polyline(s)
+          direction.polyline.stepPaths.forEach((stepPath) => {
+            if (stepPath.length > 1) {
+              const coords = stepPath.map((p) => new window.mapkit.Coordinate(p.latitude, p.longitude));
+              const polyline = new window.mapkit.PolylineOverlay(coords);
+              polyline.style = new window.mapkit.Style({
+                lineWidth: 5,
+                strokeColor: "#10b981",
+                opacity: 0.9,
+              });
+              mapInstance.current.addOverlay(polyline);
+            }
           });
-          mapInstance.current.addOverlay(polyline);
         }
+
+    
       });
+
+
+
     }
-  }, [mapkitReady, markers, routes]);
+  }, [mapkitReady, directions]);
 
   return <div ref={mapRef} style={{ width: "100%", height: 500 }} />;
 }
