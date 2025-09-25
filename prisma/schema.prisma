@@ -20,6 +20,7 @@ model User {
   email         String          @unique
   emailVerified DateTime?
   image         String?
+  firebaseUid   String?         @unique // Add Firebase UID for linking
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support

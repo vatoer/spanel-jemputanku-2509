@@ -1,4 +1,14 @@
+"use client";
+
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
+
 export function DashboardHeader() {
+
+    const { user, userData, loading } = useAuth()
+    const router = useRouter()
+
   const currentTime = new Date().toLocaleString('id-ID', {
     weekday: 'long',
     year: 'numeric', 
@@ -7,6 +17,28 @@ export function DashboardHeader() {
     hour: '2-digit',
     minute: '2-digit'
   });
+
+    useEffect(() => {
+      if (!loading && !user) {
+        router.push('/login')
+      }
+    }, [user, loading, router])
+
+    if (loading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-600">Loading profile...</p>
+          </div>
+        </div>
+      )
+    }
+
+    
+  if (!user) {
+    return null // Will redirect to login
+  }
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30">

@@ -3,6 +3,8 @@ import { ContactSection } from "@/components/landing/ContactSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { ProductsSection } from "@/components/landing/ProductsSection";
 import { ResourcesSection } from "@/components/landing/ResourcesSection";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
 
@@ -15,9 +17,23 @@ function HeroSection() {
       <p className="text-lg md:text-2xl max-w-2xl mb-8">
         Solusi modern untuk pengelolaan bus jemputan instansi pemerintah & organisasi. Mudahkan operasional, tingkatkan kepuasan penumpang, dan maksimalkan efisiensi armada Anda.
       </p>
-      <a href="#pricing" className="bg-white text-blue-600 font-semibold px-8 py-3 rounded-full shadow hover:bg-blue-100 transition">
-        Lihat Paket & Bergabung
-      </a>
+      <div className="flex gap-4 flex-col sm:flex-row">
+        <a href="#pricing" className="bg-white text-blue-600 font-semibold px-8 py-3 rounded-full shadow hover:bg-blue-100 transition">
+          Lihat Paket & Bergabung
+        </a>
+        <div className="flex gap-2">
+          <Link href="/login">
+            <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600">
+              Sign In
+            </Button>
+          </Link>
+          <Link href="/signup">
+            <Button variant="secondary">
+              Get Started
+            </Button>
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }
