@@ -51,7 +51,8 @@ export const FleetMapContainer: React.FC<FleetMapContainerProps> = ({
     return vehicles.map(vehicle => ({
       lat: vehicle.location.lat,
       lng: vehicle.location.lng,
-      title: `${vehicle.id} • Line ${vehicle.routeCode}`
+      title: `${vehicle.id} • Line ${vehicle.routeCode}`,
+      icon: "🚐" // Vehicle icon for fleet markers
     }));
   }, [vehicles]);
 

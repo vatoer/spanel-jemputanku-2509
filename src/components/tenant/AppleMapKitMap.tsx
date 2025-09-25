@@ -10,7 +10,7 @@ declare global {
 
 // Props: armada = [{ id, nama, lat, lng, rute: [{lat, lng, nama}] }]
 
-type Marker = { lat: number; lng: number; title?: string };
+type Marker = { lat: number; lng: number; title?: string; icon?: string };
 type Route = { from: string; to: string; polyline: { lat: number; lng: number }[] };
 
 export function AppleMapKitMap({ markers, routes }: { markers: Marker[]; routes?: Route[] }) {
@@ -76,9 +76,20 @@ export function AppleMapKitMap({ markers, routes }: { markers: Marker[]; routes?
     }
     mapInstance.current.removeAnnotations(mapInstance.current.annotations);
     markers.forEach((m) => {
+      const markerOptions: any = { 
+        title: m.title || "Titik", 
+        color: "#2563eb" 
+      };
+      
+      // Use custom icon if provided
+      if (m.icon) {
+        markerOptions.glyphText = m.icon;
+        markerOptions.glyphColor = "#FFFFFF";
+      }
+      
       const annotation = new window.mapkit.MarkerAnnotation(
         new window.mapkit.Coordinate(m.lat, m.lng),
-        { title: m.title || "Titik", color: "#2563eb" }
+        markerOptions
       );
       mapInstance.current.addAnnotation(annotation);
     });
