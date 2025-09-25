@@ -3,8 +3,8 @@ import { FleetHeader } from "@/components/fleet/FleetHeader";
 import { FleetMapContainer } from "@/components/fleet/FleetMapContainer";
 import { FleetSidebar } from "@/components/fleet/FleetSidebar";
 import { FleetVehicle, VehicleCarousel } from "@/components/fleet/VehicleCarousel";
-import { DirectionJson } from "@/components/tenant/AppleMapKitMap";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DirectionJson } from "@/types/mapkit.types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
