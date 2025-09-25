@@ -95,6 +95,8 @@ export default function LacakArmadaPage() {
     setSelectedVehicle(vehicle);
   };
 
+
+
   const handleContactDriver = (vehicle: FleetVehicle) => {
     alert(`Menghubungi driver ${vehicle.driver} (${vehicle.id})`);
   };
