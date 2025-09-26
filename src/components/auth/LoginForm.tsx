@@ -11,12 +11,12 @@ import { auth } from "@/lib/firebase";
 import { loginSchema, type LoginFormData } from "@/schemas/login";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  browserLocalPersistence,
-  browserSessionPersistence,
-  GoogleAuthProvider,
-  setPersistence,
-  signInWithEmailAndPassword,
-  signInWithPopup
+    browserLocalPersistence,
+    browserSessionPersistence,
+    GoogleAuthProvider,
+    setPersistence,
+    signInWithEmailAndPassword,
+    signInWithPopup
 } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -58,7 +58,7 @@ export function LoginForm() {
         if (token) {
           // Get redirect URL from query params or default to dashboard
           const urlParams = new URLSearchParams(window.location.search);
-          const redirectUrl = urlParams.get('redirect') || '/admin-dashboard';
+          const redirectUrl = urlParams.get('redirect') || '/dashboard';
           console.log('Redirecting to:', redirectUrl);
           
           // Use replace instead of push to avoid back button issues
@@ -88,7 +88,7 @@ export function LoginForm() {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       
       // User will be automatically redirected by AuthContext
-      router.push('/admin-dashboard');
+      router.push('/dashboard');
     } catch (error: any) {
       console.error('Login error:', error);
       
@@ -126,7 +126,7 @@ export function LoginForm() {
       provider.addScope('profile');
       
       await signInWithPopup(auth, provider);
-      router.push('/admin-dashboard');
+      router.push('/dashboard');
     } catch (error: any) {
       console.error('Google sign in error:', error);
       
@@ -166,7 +166,7 @@ export function LoginForm() {
             variant="link" 
             size="sm" 
             className="mt-4 text-blue-600"
-            onClick={() => router.replace('/admin-dashboard')}
+            onClick={() => router.replace('/dashboard')}
           >
             Click here if not redirected automatically
           </Button>

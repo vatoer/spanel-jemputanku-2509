@@ -14,7 +14,15 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
 
   // Pages that should show the authenticated header
   const authenticatedPages = [
-    '/admin-dashboard',
+    '/dashboard',
+    '/rute',
+    '/lacak-armada',
+    '/jadwal',
+    '/armada',
+    '/driver',
+    '/penumpang',
+    '/laporan',
+    '/pengaturan',
     '/profile',
     '/settings',
     '/notifications',

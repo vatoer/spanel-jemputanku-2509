@@ -9,7 +9,9 @@ export async function middleware(request: NextRequest) {
   // Define protected routes that require authentication
   const protectedRoutes = [
     '/dashboard',
-    '/admin-dashboard',
+    '/rute',
+    '/lacak-armada',
+    '/jadwal',
     '/profile', 
     '/settings',
     '/notifications',
@@ -57,7 +59,7 @@ export async function middleware(request: NextRequest) {
 
       if (verifyResponse.ok) {
         // Token is valid, redirect to dashboard or specified redirect
-        const redirectUrl = request.nextUrl.searchParams.get('redirect') || '/admin-dashboard'
+        const redirectUrl = request.nextUrl.searchParams.get('redirect') || '/dashboard'
         console.log('Redirecting authenticated user to:', redirectUrl)
         return NextResponse.redirect(new URL(redirectUrl, request.url))
       } else {

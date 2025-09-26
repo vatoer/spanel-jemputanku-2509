@@ -12,10 +12,10 @@ import { auth } from "@/lib/firebase";
 import { signupSchema, type SignupFormData } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile
+    createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    updateProfile
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -61,7 +61,7 @@ export function SignupForm() {
   // Handle redirect for authenticated users
   useEffect(() => {
     if (!loading && user) {
-      router.push('/admin-dashboard');
+      router.push('/dashboard');
     }
   }, [user, loading, router]);
 
@@ -86,7 +86,7 @@ export function SignupForm() {
       
       // User will be automatically synced by AuthContext
       setTimeout(() => {
-        router.push('/admin-dashboard');
+        router.push('/dashboard');
       }, 2000);
       
     } catch (error: any) {
@@ -123,7 +123,7 @@ export function SignupForm() {
       provider.addScope('profile');
       
       await signInWithPopup(auth, provider);
-      router.push('/admin-dashboard');
+      router.push('/dashboard');
     } catch (error: any) {
       console.error('Google sign up error:', error);
       

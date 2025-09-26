@@ -131,7 +131,7 @@ export default function AuthDebugPage() {
                 <Button onClick={() => router.push('/login')} variant="outline">
                   Go to Login
                 </Button>
-                <Button onClick={() => router.push('/admin-dashboard')} variant="outline">
+                <Button onClick={() => router.push('/dashboard')} variant="outline">
                   Go to Dashboard
                 </Button>
                 <Button onClick={() => router.push('/profile')} variant="outline">
