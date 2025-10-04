@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [syncing, setSyncing] = useState(false)
 
   const syncUserData = async () => {
     if (!user?.email) {
@@ -101,6 +102,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (firebaseUser) {
         try {
+          // Prevent concurrent sync operations
+          if (syncing) {
+            console.log('Sync already in progress, skipping')
+            return
+          }
+
+          setSyncing(true)
+          
           // Get and store the Firebase ID token
           const token = await firebaseUser.getIdToken()
           console.log('Got token, length:', token.length)
@@ -136,6 +145,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.error('Error syncing user:', error)
           // If token generation fails, sign out the user
           await signOut(auth)
+        } finally {
+          setSyncing(false)
         }
       } else {
         // Clear token cookie when user signs out

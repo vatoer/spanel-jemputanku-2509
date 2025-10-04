@@ -12,7 +12,18 @@
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "prisma:dbpush": "prisma db push",
-    "prisma:format": "prisma format"
+    "prisma:format": "prisma format",
+    "services:start": "docker/scripts/services.sh start-all",
+    "services:stop": "docker/scripts/services.sh stop-all",
+    "db:start": "docker/scripts/services.sh start-db",
+    "db:stop": "docker/scripts/services.sh stop-db",
+    "db:restart": "docker/scripts/services.sh restart-db",
+    "db:logs": "docker/scripts/services.sh logs",
+    "db:backup": "docker/scripts/services.sh backup",
+    "db:reset": "docker/scripts/services.sh reset",
+    "mailpit:start": "docker/scripts/services.sh start-mailpit",
+    "db:setup": "ln -sf .env.local .env && pnpm db:start && sleep 10 && pnpm prisma:migrate && pnpm prisma:generate",
+    "dev:services": "pnpm services:start && pnpm dev"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
