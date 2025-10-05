@@ -13,6 +13,7 @@
     "prisma:studio": "prisma studio",
     "prisma:dbpush": "prisma db push",
     "prisma:format": "prisma format",
+    "prisma:seed": "tsx prisma/seed.ts",
     "services:start": "docker/scripts/services.sh start-all",
     "services:stop": "docker/scripts/services.sh stop-all",
     "db:start": "docker/scripts/services.sh start-db",
@@ -80,6 +81,7 @@
     "recharts": "2.15.4",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
+    "tslog": "^4.10.2",
     "vaul": "^1.1.2",
     "zod": "^4.1.9"
   },
@@ -96,5 +98,8 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

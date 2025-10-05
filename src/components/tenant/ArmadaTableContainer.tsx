@@ -96,7 +96,11 @@ const dummyVehicles: Vehicle[] = [
   },
 ];
 
-export function ArmadaTableContainer() {
+
+interface ArmadaTableContainerProps {
+  vehicles?: Vehicle[];
+}
+export function ArmadaTableContainer({ vehicles = [] }: ArmadaTableContainerProps) {
   const [page, setPage] = useState(1);
   const [totalPages] = useState(3);
   const [selectedCount, setSelectedCount] = useState(0);
@@ -124,7 +128,7 @@ export function ArmadaTableContainer() {
         <ArmadaEmptyState />
       ) : (
         <>
-          <ArmadaTanstackTable data={dummyVehicles} />
+          <ArmadaTanstackTable data={vehicles} />
           <ArmadaPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}

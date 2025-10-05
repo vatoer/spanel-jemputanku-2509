@@ -1,13 +1,13 @@
 "use client";
-import { VehicleData, vehicleSchema } from "@/schema/vehicle";
+import { CreateVehicleData, createVehicleSchema } from "@/schema/vehicle";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 
 interface ArmadaFormProps {
-  onSubmit?: (data: VehicleData) => void;
+  onSubmit?: (data: CreateVehicleData) => void;
   isLoading?: boolean;
-  initialData?: Partial<VehicleData>;
+  initialData?: Partial<CreateVehicleData>;
 }
 
 export function ArmadaForm({ onSubmit, isLoading = false, initialData }: ArmadaFormProps) {
@@ -18,7 +18,7 @@ export function ArmadaForm({ onSubmit, isLoading = false, initialData }: ArmadaF
     watch,
     setValue,
   } = useForm({
-    resolver: zodResolver(vehicleSchema),
+    resolver: zodResolver(createVehicleSchema),
     defaultValues: {
       licensePlate: initialData?.licensePlate || "",
       model: initialData?.model || "",
@@ -43,7 +43,7 @@ export function ArmadaForm({ onSubmit, isLoading = false, initialData }: ArmadaF
     if (checked) {
       setValue("features", [...features, feature]);
     } else {
-      setValue("features", features.filter(f => f !== feature));
+      setValue("features", features.filter((f: string) => f !== feature));
     }
   };
 

@@ -161,9 +161,9 @@ model Tenant {
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
 
-  UserTenant    UserTenant[]
-  Vehicle       Vehicle[]
-  Route         Route[]
+  userTenant    UserTenant[]
+  vehicle       Vehicle[]
+  route         Route[]
   subscriptions TenantSubscription[]
 
   @@map("tenants")
@@ -321,8 +321,8 @@ model Vehicle {
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
   // Relations
-  tenant          Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  driver          User?                    @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  driver                  User?                    @relation(fields: [driverId], references: [id], onDelete: SetNull)
   drivers                 DriverVehicle[]
   rides                   Ride[]
   vehicleRouteAssignments VehicleRouteAssignment[]
