@@ -19,19 +19,19 @@ export const FleetSidebar: React.FC<FleetSidebarProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-emerald-100 text-emerald-700';
-      case 'idle': return 'bg-amber-100 text-amber-700';
-      case 'maintenance': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'active': return 'bg-green-100 text-green-700';
+      case 'idle': return 'bg-yellow-100 text-yellow-700';
+      case 'maintenance': return 'bg-gray-100 text-gray-700';
+      default: return 'bg-red-100 text-red-700'; // unknown status
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'active': return '● Active';
-      case 'idle': return '● Standby';
-      case 'maintenance': return '● Maintenance';
-      default: return '● Unknown';
+      case 'active': return 'Active';
+      case 'idle': return 'Idle';
+      case 'maintenance': return 'Maintenance';
+      default: return 'Unknown';
     }
   };
 
@@ -48,9 +48,9 @@ export const FleetSidebar: React.FC<FleetSidebarProps> = ({
   };
 
   return (
-    <div className={`bg-white border-l border-gray-200 ${isMobile ? 'w-full p-3' : 'w-80 p-4'} h-full overflow-y-auto`}>
+    <div className={`bg-white border-l border-gray-200 ${isMobile ? 'w-full' : 'w-80'} flex flex-col`}>
       {!selectedVehicle ? (
-        <div className="flex flex-col items-center justify-center h-full text-center">
+        <div className={`flex flex-col items-center justify-center flex-1 text-center ${isMobile ? 'p-3' : 'p-4'}`}>
           <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full flex items-center justify-center mb-4">
             <span className="text-2xl">🚌</span>
           </div>
@@ -62,7 +62,8 @@ export const FleetSidebar: React.FC<FleetSidebarProps> = ({
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className={`flex-1 overflow-y-auto ${isMobile ? 'p-3' : 'p-4'}`}>
+          <div className="space-y-4">
           {/* Vehicle Header */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
@@ -156,11 +157,12 @@ export const FleetSidebar: React.FC<FleetSidebarProps> = ({
             </div>
           </div>
 
-          {/* Additional Info */}
-          <div className="pt-4 border-t border-gray-200">
-            <div className="text-xs text-gray-500 space-y-1">
-              <div>Vehicle ID: {selectedVehicle.id}</div>
-              <div>Last sync: {formatLastUpdate(selectedVehicle.lastUpdate)}</div>
+            {/* Additional Info */}
+            <div className="pt-4 border-t border-gray-200">
+              <div className="text-xs text-gray-500 space-y-1">
+                <div>Vehicle ID: {selectedVehicle.id}</div>
+                <div>Last sync: {formatLastUpdate(selectedVehicle.lastUpdate)}</div>
+              </div>
             </div>
           </div>
         </div>

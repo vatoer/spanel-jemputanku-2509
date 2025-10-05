@@ -1,3 +1,4 @@
+import { UserAvatar } from '@/components/layout/UserAvatar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -50,29 +51,31 @@ export const RouteHeader: React.FC<RouteHeaderProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Route Stats - Desktop Only */}
+        <div className="flex items-center gap-3">
+          {/* Essential Stats - Simplified */}
           {!isMobile && (
-            <div className="flex items-center gap-2">
-              <div className="bg-white/20 rounded px-1.5 py-0.5 text-center">
-                <div className="text-xs font-bold text-white">{totalRoutes}</div>
-                <div className="text-xs text-blue-100">Total</div>
-              </div>
-              <div className="bg-white/20 rounded px-1.5 py-0.5 text-center">
-                <div className="text-xs font-bold text-white">{activeRoutes}</div>
-                <div className="text-xs text-blue-100">Active</div>
+            <div className="flex items-center gap-2 text-blue-100">
+              <div className="flex items-center gap-1">
+                <span className="text-xs">{activeRoutes}/{totalRoutes}</span>
+                <span className="text-xs opacity-75">active</span>
               </div>
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Action Button */}
           <button 
             onClick={onAddRoute}
             className={`bg-white/20 hover:bg-white/30 text-white px-2 py-1 rounded transition font-medium flex items-center gap-1 ${isMobile ? 'text-xs' : 'text-xs'}`}
           >
             <span>+</span>
-            <span className={isMobile ? 'hidden' : ''}>Add</span>
+            <span className={isMobile ? 'hidden' : ''}>Add Route</span>
           </button>
+
+          {/* Divider for Desktop */}
+          {!isMobile && <div className="w-px h-6 bg-white/20"></div>}
+
+          {/* User Avatar */}
+          <UserAvatar className="border-white/30 hover:border-white/50" />
         </div>
       </div>
     </div>

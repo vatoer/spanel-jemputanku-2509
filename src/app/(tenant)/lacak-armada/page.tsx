@@ -1,10 +1,10 @@
 "use client"
+
 import { FleetHeader } from "@/components/fleet/FleetHeader";
 import { FleetMapContainer } from "@/components/fleet/FleetMapContainer";
 import { FleetSidebar } from "@/components/fleet/FleetSidebar";
 import { FleetVehicle, VehicleCarousel } from "@/components/fleet/VehicleCarousel";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { DirectionJson } from "@/types/mapkit.types";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -82,20 +82,7 @@ export default function LacakArmadaPage() {
   const isMobile = useIsMobile();
   const [selectedVehicle, setSelectedVehicle] = useState<FleetVehicle | null>(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
-
-  // get rute data from API 
-  const [directions, setDirections] = useState<DirectionJson[]>([]);
-
-  // Fetch route data from API
-  const fetchRouteData = async () => {
-    try {
-      const response = await fetch("/api/rute");
-      const data = await response.json();
-      setDirections(data);
-    } catch (error) {
-      console.error("Error fetching route data:", error);
-    }
-  };
+  const [showSidebar, setShowSidebar] = useState(true);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -109,8 +96,6 @@ export default function LacakArmadaPage() {
   const handleVehicleSelect = (vehicle: FleetVehicle) => {
     setSelectedVehicle(vehicle);
   };
-
-
 
   const handleContactDriver = (vehicle: FleetVehicle) => {
     alert(`Menghubungi driver ${vehicle.driver} (${vehicle.id})`);
@@ -128,24 +113,31 @@ export default function LacakArmadaPage() {
     alert(`Melihat rute ${vehicle.id}`);
   };
 
-  if (isMobile) {
-    // Mobile Layout
-    return (
-      <div className="h-screen flex flex-col bg-gray-50">
-        <FleetHeader 
-          totalVehicles={FLEET_VEHICLES.length}
-          activeVehicles={FLEET_VEHICLES.filter(v => v.status === 'active').length}
-          totalPassengers={FLEET_VEHICLES.reduce((sum, v) => sum + v.passengers, 0)}
-        />
-        
-        <div className="flex-1 relative overflow-hidden">
-          <FleetMapContainer 
-            vehicles={FLEET_VEHICLES}
-            selectedVehicle={selectedVehicle?.id || null}
-          />
-          
-          {/* Optimized Mobile Selected Vehicle Info */}
-          {selectedVehicle && (
+  const handleToggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+
+  const handleBack = () => {
+    router.push('/dashboard');
+  };
+
+  return (
+    <div className="h-screen bg-gray-50 flex flex-col">
+      {/* Header */}
+      <FleetHeader 
+        totalVehicles={FLEET_VEHICLES.length}
+        activeVehicles={FLEET_VEHICLES.filter(v => v.status === 'active').length}
+        totalPassengers={FLEET_VEHICLES.reduce((sum, v) => sum + v.passengers, 0)}
+      />
+
+      {/* Desktop: Map + Sidebar / Mobile: Map Only */}
+      <div className={`${isMobile ? 'flex-1 mb-2' : 'h-[60vh] mb-3'} flex overflow-hidden`}>
+        <FleetMapContainer 
+          vehicles={FLEET_VEHICLES}
+          selectedVehicle={selectedVehicle?.id || null}
+        >
+          {/* Mobile Selected Vehicle Info Overlay */}
+          {isMobile && selectedVehicle && (
             <div className="absolute bottom-20 left-4 right-4 z-40">
               <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg p-3">
                 <div className="flex items-center justify-between mb-2">
@@ -184,44 +176,20 @@ export default function LacakArmadaPage() {
               </div>
             </div>
           )}
-        </div>
+        </FleetMapContainer>
 
-        <VehicleCarousel
-          vehicles={FLEET_VEHICLES}
-          selectedVehicle={selectedVehicle}
-          onVehicleSelect={handleVehicleSelect}
-          onContactDriver={handleContactDriver}
-          onViewDetails={handleViewDetails}
-        />
-      </div>
-    );
-  }
-
-  // Desktop Layout
-  return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      <FleetHeader 
-        totalVehicles={FLEET_VEHICLES.length}
-        activeVehicles={FLEET_VEHICLES.filter(v => v.status === 'active').length}
-        totalPassengers={FLEET_VEHICLES.reduce((sum, v) => sum + v.passengers, 0)}
-      />
-      
-      <div className="flex flex-1 overflow-hidden mb-2">
-        <div className="flex-1 relative">
-          <FleetMapContainer 
-            vehicles={FLEET_VEHICLES}
-            selectedVehicle={selectedVehicle?.id || null}
+        {/* Desktop: Fleet Sidebar - Same height as map */}
+        {!isMobile && (
+          <FleetSidebar
+            selectedVehicle={selectedVehicle}
+            onContactDriver={handleContactDriver}
+            onViewHistory={handleViewHistory}
+            onViewRoute={handleViewRoute}
           />
-        </div>
-        
-        <FleetSidebar
-          selectedVehicle={selectedVehicle}
-          onContactDriver={handleContactDriver}
-          onViewHistory={handleViewHistory}
-          onViewRoute={handleViewRoute}
-        />
+        )}
       </div>
 
+      {/* Vehicle Carousel */}
       <VehicleCarousel
         vehicles={FLEET_VEHICLES}
         selectedVehicle={selectedVehicle}

@@ -121,17 +121,17 @@ export const VehicleCarousel: React.FC<VehicleCarouselProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-emerald-100 text-emerald-700';
-      case 'idle': return 'bg-amber-100 text-amber-700';
-      case 'maintenance': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'active': return 'bg-green-100 text-green-700';
+      case 'idle': return 'bg-yellow-100 text-yellow-700';
+      case 'maintenance': return 'bg-gray-100 text-gray-700';
+      default: return 'bg-red-100 text-red-700'; // unknown status
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active': return '● Active';
-      case 'idle': return '● Standby';
+      case 'idle': return '● Idle';
       case 'maintenance': return '● Maintenance';
       default: return '● Unknown';
     }

@@ -1,3 +1,4 @@
+import { UserAvatar } from '@/components/layout/UserAvatar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -69,6 +70,12 @@ export const FleetHeader: React.FC<FleetHeaderProps> = ({
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
             <span className={`text-green-100 font-medium ${isMobile ? 'text-xs' : 'text-xs'}`}>Live</span>
           </div>
+
+          {/* Divider for Desktop */}
+          {!isMobile && <div className="w-px h-6 bg-white/20"></div>}
+
+          {/* User Avatar */}
+          <UserAvatar className="border-white/30 hover:border-white/50" />
         </div>
       </div>
     </div>
