@@ -4,7 +4,7 @@ import { ArmadaForm } from "@/components/tenant/ArmadaForm";
 import { TenantBreadcrumb } from "@/components/tenant/TenantBreadcrumb";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
 import { TenantSidebar } from "@/components/tenant/TenantSidebar";
-import { Armada } from "@/schema/armada";
+import { Armada } from "@/schema/vehicle";
 import { useRouter } from "next/navigation";
 
 

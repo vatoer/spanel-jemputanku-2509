@@ -1,32 +1,51 @@
 "use client";
-import { Armada, armadaSchema } from "@/schema/armada";
+import { VehicleData, vehicleSchema } from "@/schema/vehicle";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Button } from "../ui/button";
 
-export function ArmadaForm({ onSubmit }: { onSubmit?: (data: Armada) => void }) {
+interface ArmadaFormProps {
+  onSubmit?: (data: VehicleData) => void;
+  isLoading?: boolean;
+  initialData?: Partial<VehicleData>;
+}
+
+export function ArmadaForm({ onSubmit, isLoading = false, initialData }: ArmadaFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm({
-    resolver: zodResolver(armadaSchema),
+    resolver: zodResolver(vehicleSchema),
     defaultValues: {
-      platNomor: "",
-      tipe: "",
-      kapasitas: 30,
-      tahun: new Date().getFullYear(),
-      merk: "",
-      warna: "",
-      status: "Aktif",
-      nomorRangka: "",
-      nomorMesin: "",
-      tanggalStnk: "",
-      tanggalKir: "",
-  fitur: [],
-  catatan: "",
-  tanggalPajak: "",
+      licensePlate: initialData?.licensePlate || "",
+      model: initialData?.model || "",
+      capacity: initialData?.capacity || 30,
+      year: initialData?.year || new Date().getFullYear(),
+      manufacturer: initialData?.manufacturer || "",
+      color: initialData?.color || "",
+      status: initialData?.status || "ACTIVE",
+      chassisNumber: initialData?.chassisNumber || "",
+      engineNumber: initialData?.engineNumber || "",
+      stnkDate: initialData?.stnkDate || "",
+      kirDate: initialData?.kirDate || "",
+      taxDate: initialData?.taxDate || "",
+      features: initialData?.features || [],
+      notes: initialData?.notes || "",
     },
   });
+
+  const features = watch("features") || [];
+  
+  const handleFeatureChange = (feature: string, checked: boolean) => {
+    if (checked) {
+      setValue("features", [...features, feature]);
+    } else {
+      setValue("features", features.filter(f => f !== feature));
+    }
+  };
 
   return (
     <form
@@ -37,134 +56,157 @@ export function ArmadaForm({ onSubmit }: { onSubmit?: (data: Armada) => void }) 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Plat Nomor</label>
-          <input {...register("platNomor")}
+          <input {...register("licensePlate")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
             placeholder="B 1234 CD" />
-          {errors.platNomor && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.platNomor.message}</p>}
+          {errors.licensePlate && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.licensePlate.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tipe</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Model Kendaraan</label>
           <select
-            {...register("tipe")}
+            {...register("model")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white transition"
             defaultValue=""
           >
-            <option value="" disabled>Pilih tipe armada</option>
+            <option value="" disabled>Pilih model kendaraan</option>
             <option value="Bus Besar">Bus Besar</option>
             <option value="Bus Sedang">Bus Sedang</option>
             <option value="Bus Kecil">Bus Kecil</option>
             <option value="Mobil Besar">Mobil Besar</option>
             <option value="Mobil Kecil">Mobil Kecil</option>
-            <option value="lainya">Lainnya</option>
+            <option value="Lainnya">Lainnya</option>
           </select>
-          {errors.tipe && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.tipe.message}</p>}
+          {errors.model && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.model.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Kapasitas</label>
-          <input type="number" {...register("kapasitas")}
+          <input type="number" {...register("capacity")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
             placeholder="Jumlah kursi" />
-          {errors.kapasitas && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.kapasitas.message}</p>}
+          {errors.capacity && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.capacity.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Tahun</label>
           <input
             type="number"
-            {...register("tahun")}
+            {...register("year")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
-            placeholder="Tahun pembelian"
+            placeholder="Tahun pembuatan"
             min={new Date().getFullYear() - 20}
             max={new Date().getFullYear()}
           />
-          {errors.tahun && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.tahun.message}</p>}
+          {errors.year && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.year.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Merk</label>
-          <input {...register("merk")}
+          <input {...register("manufacturer")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
             placeholder="Mercedes-Benz, Hino, dll" />
-          {errors.merk && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.merk.message}</p>}
+          {errors.manufacturer && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.manufacturer.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Warna</label>
-          <input {...register("warna")}
+          <input {...register("color")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
             placeholder="Putih, Biru, dll" />
-          {errors.warna && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.warna.message}</p>}
+          {errors.color && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.color.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Status Armada</label>
           <select {...register("status")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition bg-white">
-            <option value="Aktif">Aktif</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Tidak Aktif">Tidak Aktif</option>
+            <option value="ACTIVE">Aktif</option>
+            <option value="MAINTENANCE">Maintenance</option>
+            <option value="INACTIVE">Tidak Aktif</option>
           </select>
           {errors.status && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.status.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Rangka</label>
-          <input {...register("nomorRangka")}
+          <input {...register("chassisNumber")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
             placeholder="Nomor rangka kendaraan" />
-          {errors.nomorRangka && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.nomorRangka.message}</p>}
+          {errors.chassisNumber && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.chassisNumber.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Mesin</label>
-          <input {...register("nomorMesin")}
+          <input {...register("engineNumber")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
             placeholder="Nomor mesin kendaraan" />
-          {errors.nomorMesin && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.nomorMesin.message}</p>}
+          {errors.engineNumber && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.engineNumber.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal STNK</label>
-          <input type="date" {...register("tanggalStnk")}
+          <input type="date" {...register("stnkDate")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" />
-          {errors.tanggalStnk && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.tanggalStnk.message}</p>}
+          {errors.stnkDate && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.stnkDate.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal KIR</label>
-          <input type="date" {...register("tanggalKir")}
+          <input type="date" {...register("kirDate")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" />
-          {errors.tanggalKir && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.tanggalKir.message}</p>}
+          {errors.kirDate && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.kirDate.message}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Pajak</label>
-          <input type="date" {...register("tanggalPajak")}
+          <input type="date" {...register("taxDate")}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition" />
-          {errors.tanggalPajak && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.tanggalPajak.message}</p>}
+          {errors.taxDate && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.taxDate.message}</p>}
         </div>
       </div>  
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Fitur Armada</label>
-        <div className="flex flex-wrap gap-3">
-          <label className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-2 py-1 cursor-pointer hover:bg-gray-100 transition">
-            <input type="checkbox" value="AC" {...register("fitur")}/>
-            <span className="text-gray-700">AC</span>
+
+      <div className="space-y-4">
+        <h3 className="font-semibold text-gray-800">Fitur Armada</h3>
+        <div className="space-y-2">
+          <label className="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              checked={features.includes("WiFi Hotspot")}
+              onChange={(e) => handleFeatureChange("WiFi Hotspot", e.target.checked)}
+              className="rounded border-gray-300" 
+            />
+            <span>WiFi Hotspot</span>
           </label>
-          <label className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-2 py-1 cursor-pointer hover:bg-gray-100 transition">
-            <input type="checkbox" value="WiFi" {...register("fitur")}/>
-            <span className="text-gray-700">WiFi</span>
+          <label className="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              checked={features.includes("GPS")}
+              onChange={(e) => handleFeatureChange("GPS", e.target.checked)}
+              className="rounded border-gray-300" 
+            />
+            <span>GPS</span>
           </label>
-          <label className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-2 py-1 cursor-pointer hover:bg-gray-100 transition">
-            <input type="checkbox" value="Toilet" {...register("fitur")}/>
-            <span className="text-gray-700">Toilet</span>
+          <label className="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              checked={features.includes("Dashcam")}
+              onChange={(e) => handleFeatureChange("Dashcam", e.target.checked)}
+              className="rounded border-gray-300" 
+            />
+            <span>Dashcam</span>
           </label>
-          <label className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-2 py-1 cursor-pointer hover:bg-gray-100 transition">
-            <input type="checkbox" value="Smoking Area" {...register("fitur")}/>
-            <span className="text-gray-700">Smoking Area</span>
+          <label className="flex items-center space-x-2">
+            <input 
+              type="checkbox" 
+              checked={features.includes("Karaoke")}
+              onChange={(e) => handleFeatureChange("Karaoke", e.target.checked)}
+              className="rounded border-gray-300" 
+            />
+            <span>Karaoke</span>
           </label>
         </div>
-        {errors.fitur && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.fitur.message as string}</p>}
       </div>
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Catatan/Deskripsi</label>
-        <textarea {...register("catatan")}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition placeholder:text-gray-400"
-          placeholder="Catatan tambahan (opsional)" rows={2} maxLength={255} />
-        {errors.catatan && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.catatan.message}</p>}
+        <textarea {...register("notes")} rows={3}
+          placeholder="Masukkan catatan atau deskripsi tambahan"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition resize-none" />
+        {errors.notes && <p className="text-rose-500 text-xs mt-1 font-medium">{errors.notes.message}</p>}
       </div>
-  <button type="submit" className="bg-primary-600 text-white px-8 py-2.5 rounded-lg font-semibold shadow hover:bg-primary-700 transition mt-4 focus:outline-none focus:ring-2 focus:ring-primary-400">Simpan</button>
+          <Button type="submit" disabled={isLoading}>
+        {isLoading ? (initialData ? "Memperbarui..." : "Membuat...") : (initialData ? "Perbarui Armada" : "Simpan Armada")}
+      </Button>
     </form>
   );
 }

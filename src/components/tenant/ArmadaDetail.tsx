@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Armada } from "@/schema/armada";
+import { Armada } from "@/schema/vehicle";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa";

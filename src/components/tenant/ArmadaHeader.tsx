@@ -18,6 +18,10 @@ export function ArmadaHeader() {
     minute: '2-digit'
   });
 
+  const handleTambahArmada = () => {
+    router.push('/armada/tambah');
+  };
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login')
@@ -71,7 +75,7 @@ export function ArmadaHeader() {
             
             {/* Quick Actions */}
             <div className="flex gap-2">
-              <button className="px-3 py-2 text-sm bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-medium transition">
+              <button onClick={handleTambahArmada} className="px-3 py-2 text-sm bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-medium transition">
                 ➕ Tambah Armada
               </button>
               <button className="px-3 py-2 text-sm bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg font-medium transition">
