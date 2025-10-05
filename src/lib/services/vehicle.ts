@@ -63,6 +63,50 @@ export async function getVehicleById(
 }
 
 /**
+ * Get a single vehicle by license plate
+ * Matches license plates by removing spaces and case-insensitive comparison
+ */
+export async function getVehicleByLicensePlate(
+  licensePlate: string,
+  options?: {
+    includeDriver?: boolean;
+    includeRoutes?: boolean;
+    includeServiceRecords?: boolean;
+  }
+) {
+  // remove all other non-alphanumeric characters for better matching
+  const normalizedInput = licensePlate.replace(/[^A-Z0-9]/g, '').toUpperCase();
+
+  // Alternative approach: Get all vehicles and filter in memory (safer but less efficient for large datasets)
+  // Use raw SQL for better performance with proper parameterization
+  const vehicles = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT id FROM "Vehicle" 
+    WHERE UPPER(REPLACE("license_plate", ' ', '')) = ${normalizedInput}
+    LIMIT 1
+  `;
+  
+  if (vehicles.length === 0) {
+    return null;
+  }
+  
+  // Now get the full vehicle with includes using the found ID
+  return await prisma.vehicle.findUnique({
+    where: { id: vehicles[0].id },
+    include: {
+      driver: options?.includeDriver,
+      vehicleRouteAssignments: options?.includeRoutes ? {
+        include: { route: true },
+        where: { isActive: true }
+      } : false,
+      serviceRecords: options?.includeServiceRecords ? {
+        orderBy: { serviceDate: 'desc' },
+        take: 5 // Latest 5 records
+      } : false
+    }
+  });
+}
+
+/**
  * Create a new vehicle
  */
 export async function createVehicle(data: CreateVehicleData & { tenantId: string }) {

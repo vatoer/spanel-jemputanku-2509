@@ -5,7 +5,7 @@ import { ActionResponse } from "../response";
 
 export const ambilDaftarArmada = async (): Promise<ActionResponse<Vehicle[]>> => {
   // Implementasi logika untuk mengambil daftar armada berdasarkan tenantId
-    const tenantId = "tenant-jemputanku-demo";
+    const tenantId = "tenant-transjakarta";
 
     try {
       const armadas = await getVehiclesByTenant(tenantId, { includeDriver: true });
@@ -25,7 +25,7 @@ export const ambilDaftarArmada = async (): Promise<ActionResponse<Vehicle[]>> =>
 
 export const simpanArmadaBaru = async (data: CreateVehicleData): Promise<ActionResponse<Vehicle>> => {
   // TODO: get tenantId from user session or context
-  const tenantId = "tenant-jemputanku-demo";
+  const tenantId = "tenant-transjakarta";
   console.log("Menyimpan armada:", data);
 
   try {
@@ -55,6 +55,67 @@ export const simpanArmadaBaru = async (data: CreateVehicleData): Promise<ActionR
     };
   }
 }
+
+export const ambilArmadaByPlatNomor = async (platNomor: string): Promise<ActionResponse<Vehicle>> => {
+  try {
+    const { getVehicleByLicensePlate } = await import("@/lib/services/vehicle");
+    const armada = await getVehicleByLicensePlate(platNomor, { includeDriver: true });
+    
+    if (!armada) {
+      return {
+        success: false,
+        error: "Armada tidak ditemukan"
+      };
+    }
+
+    return {
+      success: true,
+      data: armada
+    };
+  } catch (error) {
+    console.error("Error fetching vehicle:", error);
+    return {
+      success: false,
+      error: "Gagal mengambil data armada"
+    };
+  }
+};
+
+export const updateArmada = async (
+  platNomor: string, 
+  data: CreateVehicleData
+): Promise<ActionResponse<Vehicle>> => {
+  try {
+    const { updateVehicleSchema } = await import("@/schema/vehicle");
+    const { getVehicleByLicensePlate, updateVehicle } = await import("@/lib/services/vehicle");
+    
+    // Validate input data
+    updateVehicleSchema.parse(data);
+    
+    // Get current vehicle
+    const currentVehicle = await getVehicleByLicensePlate(platNomor);
+    if (!currentVehicle) {
+      return {
+        success: false,
+        error: "Armada tidak ditemukan"
+      };
+    }
+
+    // Update vehicle
+    const updatedVehicle = await updateVehicle(currentVehicle.id, data);
+    
+    return {
+      success: true,
+      data: updatedVehicle
+    };
+  } catch (error) {
+    console.error("Error updating vehicle:", error);
+    return {
+      success: false,
+      error: "Gagal mengupdate armada"
+    };
+  }
+};
 
 export const hapusArmada = async (id: string) => {
   // Implementasi logika untuk menghapus armada
