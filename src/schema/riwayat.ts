@@ -1,31 +1,75 @@
 import { z } from "zod";
 
-export const riwayatSchema = z.object({
-  tanggal: z.string().min(1, "Tanggal wajib diisi"),
-  jenis: z.array(z.string().min(1)).min(1, "Pilih minimal satu jenis perbaikan/pemeliharaan"),
-  keterangan: z.string().min(1, "Keterangan wajib diisi"),
-  biaya: z.coerce.number().min(0, "Biaya wajib diisi"),
-  tempatService: z.string().min(1, "Tempat service wajib diisi"),
-  fileBukti: z
-    .any()
-    .refine(
-      (files) => {
-        if (!files || !(files instanceof FileList) || files.length === 0) return false;
-        const allowedTypes = [
-          "application/pdf",
-          "image/jpeg",
-          "image/png",
-          "image/jpg",
-          "image/webp",
-        ];
-        for (let i = 0; i < files.length; i++) {
-          if (!allowedTypes.includes(files[i].type)) return false;
-        }
-        return true;
-      },
-      { message: "Semua file harus berupa PDF atau gambar (jpg, png, webp)" }
-    ),
+// Enums matching Prisma schema
+export const ServiceTypeEnum = z.enum(["MAINTENANCE", "REPAIR", "INSPECTION", "UPGRADE"]);
+export const ServiceCategoryEnum = z.enum([
+  "ENGINE", "TRANSMISSION", "BRAKES", "TIRES", "ELECTRICAL", 
+  "AC_HEATING", "BODY", "INTERIOR", "SAFETY", "GENERAL"
+]);
+export const ServiceStatusEnum = z.enum(["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "OVERDUE"]);
+
+// Main form schema for creating/updating service records
+export const vehicleServiceRecordSchema = z.object({
+  type: ServiceTypeEnum,
+  category: ServiceCategoryEnum,
+  title: z.string().min(1, "Judul pemeliharaan dan perbaikan wajib diisi"),
+  description: z.string().optional(),
+  serviceDate: z.string().min(1, "Tanggal pemeliharaan dan perbaikan wajib diisi"),
+  cost: z.coerce.number().min(0, "Biaya harus 0 atau lebih").optional(),
+  mileage: z.coerce.number().min(0, "Kilometer harus 0 atau lebih").optional(),
+  status: ServiceStatusEnum,
+  nextDueDate: z.string().optional(),
+  vendor: z.string().optional(),
+  invoice: z.string().optional(),
 });
 
-export type Riwayat = z.infer<typeof riwayatSchema>;
-export type RiwayatFormValues = z.infer<typeof riwayatSchema>;
+// Schema for display/read operations (includes id and timestamps)
+export const vehicleServiceRecordDisplaySchema = vehicleServiceRecordSchema.extend({
+  id: z.string(),
+  vehicleId: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+// Form values type
+export type VehicleServiceRecordFormValues = z.infer<typeof vehicleServiceRecordSchema>;
+export type VehicleServiceRecord = z.infer<typeof vehicleServiceRecordDisplaySchema>;
+
+// Type definitions for enums
+export type ServiceType = z.infer<typeof ServiceTypeEnum>;
+export type ServiceCategory = z.infer<typeof ServiceCategoryEnum>;
+export type ServiceStatus = z.infer<typeof ServiceStatusEnum>;
+
+// Display labels for enums
+export const serviceTypeLabels: Record<ServiceType, string> = {
+  MAINTENANCE: "Pemeliharaan",
+  REPAIR: "Perbaikan",
+  INSPECTION: "Inspeksi",
+  UPGRADE: "Peningkatan"
+};
+
+export const serviceCategoryLabels: Record<ServiceCategory, string> = {
+  ENGINE: "Mesin",
+  TRANSMISSION: "Transmisi",
+  BRAKES: "Rem",
+  TIRES: "Ban",
+  ELECTRICAL: "Kelistrikan",
+  AC_HEATING: "AC/Pemanas",
+  BODY: "Bodi",
+  INTERIOR: "Interior",
+  SAFETY: "Keselamatan",
+  GENERAL: "Umum"
+};
+
+export const serviceStatusLabels: Record<ServiceStatus, string> = {
+  SCHEDULED: "Terjadwal",
+  IN_PROGRESS: "Sedang Dikerjakan",
+  COMPLETED: "Selesai",
+  CANCELLED: "Dibatalkan",
+  OVERDUE: "Terlambat"
+};
+
+// Legacy schema for backward compatibility
+export const riwayatSchema = vehicleServiceRecordSchema;
+export type Riwayat = VehicleServiceRecord;
+export type RiwayatFormValues = VehicleServiceRecordFormValues;

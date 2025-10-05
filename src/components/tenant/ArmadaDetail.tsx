@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Armada } from "@/schema/armada";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa";
@@ -24,6 +23,7 @@ const dummyData: Armada = {
   nomorMesin: "EN9876543210",
   tanggalStnk: "2025-01-10",
   tanggalKir: "2025-06-15",
+  tanggalPajak: "2025-12-20", // Added missing required field
   fitur: ["AC", "WiFi"],
   catatan: "Terakhir service: 1 bulan lalu."
 };
@@ -65,18 +65,13 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
   function handlePhotoPrev() {
     setPhotoIdx((idx) => (idx - 1 + photos.length) % photos.length);
   }
-  function handleAssignDriver(d) {
+  function handleAssignDriver(d: any) {
     setDriver(d);
     setAssignOpen(false);
   }
 
   return (
-    <section className="bg-white rounded-xl shadow p-8 max-w-2xl mx-auto">
-      <div className="flex items-center justify-end mb-4">
-        <Button variant="outline" onClick={() => router.push(`/armada/${platNomor}/edit`)}>
-          Edit
-        </Button>
-      </div>
+    <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">{/* Improved shadow and spacing */}
 
       {/* Gallery Foto Armada */}
       <div className="mb-6">
@@ -99,16 +94,8 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
         </div>
       </div>
 
-      {/* Data Armada */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="md:col-span-2 mb-2 flex justify-end">
-          <Link
-            href={`/armada/${platNomor}/riwayat`}
-            className="text-blue-600 hover:underline text-sm font-medium flex items-center gap-1"
-          >
-            <span>Riwayat Pemeliharaan & Perbaikan</span>
-          </Link>
-        </div>
+      {/* Data Armada - Clean layout tanpa duplicate actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">{/* Improved spacing */}
         <div>
           <div className="text-gray-500 text-sm">Plat Nomor</div>
           <div className="font-semibold text-lg">{data.platNomor}</div>

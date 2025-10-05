@@ -1,11 +1,11 @@
 "use client";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
 
@@ -18,7 +18,8 @@ const labelMap: Record<string, string> = {
   laporan: "Laporan",
   pengaturan: "Pengaturan",
   tambah: "Tambah",
-  edit: "Edit"
+  edit: "Edit",
+  riwayat: "Riwayat"
 };
 
 export function TenantBreadcrumb() {
@@ -28,7 +29,9 @@ export function TenantBreadcrumb() {
   // Build breadcrumb items
   const items = segments.map((seg, idx) => {
     const href = "/" + segments.slice(0, idx + 1).join("/");
-    const label = labelMap[seg] || seg;
+    // Decode URL encoded segments (untuk plat nomor)
+    const decodedSeg = decodeURIComponent(seg);
+    const label = labelMap[seg] || decodedSeg;
     const isLast = idx === segments.length - 1;
     return (
       <BreadcrumbItem key={href}>
