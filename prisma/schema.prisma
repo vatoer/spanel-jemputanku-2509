@@ -293,20 +293,36 @@ enum EnumUserRole {
   API_CLIENT
 }
 
+enum VehicleStatus {
+  ACTIVE
+  MAINTENANCE
+  INACTIVE
+}
+
 model Vehicle {
-  id                      String                   @id @default(cuid())
-  tenantId                String                   @map("tenant_id")
-  tenant                  Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  licensePlate            String                   @unique
-  model                   String
-  manufacturer            String
-  year                    Int
-  color                   String
-  capacity                Int
-  createdAt               DateTime                 @default(now()) @map("created_at")
-  updatedAt               DateTime                 @updatedAt @map("updated_at")
-  driver                  User?                    @relation(fields: [driverId], references: [id], onDelete: Cascade)
-  driverId                String?                  @map("driver_id")
+  id            String        @id @default(cuid())
+  tenantId      String        @map("tenant_id")
+  licensePlate  String        @unique @map("license_plate")
+  model         String
+  manufacturer  String
+  year          Int
+  color         String
+  capacity      Int
+  status        VehicleStatus @default(ACTIVE)
+  chassisNumber String?       @map("chassis_number")
+  engineNumber  String?       @map("engine_number")
+  stnkDate      String?       @map("stnk_date")
+  kirDate       String?       @map("kir_date")
+  taxDate       String?       @map("tax_date")
+  features      String[]      @default([])
+  notes         String?
+  driverId      String?       @map("driver_id")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  tenant          Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  driver          User?                    @relation(fields: [driverId], references: [id], onDelete: SetNull)
   drivers                 DriverVehicle[]
   rides                   Ride[]
   vehicleRouteAssignments VehicleRouteAssignment[]
