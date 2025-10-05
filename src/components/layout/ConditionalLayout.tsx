@@ -2,7 +2,6 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { usePathname } from 'next/navigation'
-import { AppHeader } from './AppHeader'
 
 interface ConditionalLayoutProps {
   children: React.ReactNode
@@ -46,11 +45,11 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
 
   return (
     <>
-      {shouldShowHeader && <AppHeader />}
+      {/* {shouldShowHeader && <AppHeader />} */}
       {shouldShowNoHeader ? (
         children
       ) : (
-        <main className={shouldShowHeader ? 'pt-16' : ''}>
+        <main className={shouldShowHeader ? '' : ''}>
           {children}
         </main>
       )}

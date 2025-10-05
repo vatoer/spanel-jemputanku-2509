@@ -3,6 +3,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from 'next/navigation';
 import { useEffect } from "react";
+import { UserAvatar } from "../layout/UserAvatar";
 
 export function DashboardHeader() {
 
@@ -80,15 +81,7 @@ export function DashboardHeader() {
             </div>
             
             {/* User Profile */}
-            <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">A</span>
-              </div>
-              <div className="text-right">
-                <div className="text-sm font-medium text-gray-900">Admin</div>
-                <div className="text-xs text-gray-500">Super Admin</div>
-              </div>
-            </div>
+            <UserAvatar />
           </div>
         </div>
       </div>
