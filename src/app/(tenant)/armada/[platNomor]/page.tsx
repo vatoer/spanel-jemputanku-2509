@@ -4,10 +4,29 @@ import { ArmadaDetailHeaderInfo } from "@/components/tenant/ArmadaDetailHeaderIn
 import { TenantBreadcrumb } from "@/components/tenant/TenantBreadcrumb";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
 import { TenantSidebar } from "@/components/tenant/TenantSidebar";
+import { getVehicleByLicensePlate } from "@/lib/services/vehicle";
 
 export default async function ArmadaDetailPage({ params }: { params: Promise<{ platNomor: string }> }) {
 
   const { platNomor } = await params;
+
+  const armadaData = await getVehicleByLicensePlate(platNomor);
+
+  if (!armadaData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex">
+        <TenantSidebar />
+        <div className="flex-1 flex flex-col">
+          <div className="md:hidden p-4"><TenantMobileNav /></div>
+          <main className="container mx-auto px-4 py-8">
+            <TenantBreadcrumb />
+            <h1 className="text-2xl font-bold text-blue-700 mb-4">Armada Tidak Ditemukan</h1>
+            <p className="mb-6 text-gray-700">Maaf, armada dengan plat nomor "{platNomor}" tidak ditemukan.</p>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -43,7 +62,7 @@ export default async function ArmadaDetailPage({ params }: { params: Promise<{ p
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
             {/* Content wrapper dengan proper spacing */}
             <div className="space-y-6">
-              <ArmadaDetail platNomor={platNomor} />
+              <ArmadaDetail platNomor={platNomor} armadaData={armadaData} />
             </div>
           </div>
         </main>

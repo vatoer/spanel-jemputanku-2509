@@ -1,32 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Armada } from "@/schema/vehicle";
+import { VehicleDetailResult } from "@/lib/services/vehicle";
+import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa";
 
 type ArmadaDetailProps = {
   platNomor: string;
+  armadaData?: VehicleDetailResult; // Optional armadaData prop
 };
 
-// Dummy data, replace with real fetch logic as needed
-const dummyData: Armada = {
-  platNomor: "B 1234 CD",
-  tipe: "Bus Besar",
-  kapasitas: 45,
-  status: "Aktif",
-  tahun: 2021,
-  merk: "Mercedes-Benz",
-  warna: "Putih",
-  nomorRangka: "MB1234567890",
-  nomorMesin: "EN9876543210",
-  tanggalStnk: "2025-01-10",
-  tanggalKir: "2025-06-15",
-  tanggalPajak: "2025-12-20", // Added missing required field
-  fitur: ["AC", "WiFi"],
-  catatan: "Terakhir service: 1 bulan lalu."
-};
 
 const dummyPhotos = [
   "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80", // bus di pegunungan
@@ -42,15 +27,53 @@ const dummyDriver = {
   status: "Aktif"
 };
 
-const dummyDriverList = [
-  dummyDriver,
-  { nama: "Andi Wijaya", foto: "https://randomuser.me/api/portraits/men/33.jpg", kontak: "0813-2222-3333", sim: "B1 Aktif", status: "Aktif" },
-  { nama: "Siti Aminah", foto: "https://randomuser.me/api/portraits/women/32.jpg", kontak: "0812-8888-9999", sim: "B1 Expired", status: "Tidak Aktif" }
+// Type for driver selection list - partial User fields needed for UI
+type DriverListItem = Pick<User, 'id' | 'name' | 'email' | 'image' | 'status'> & {
+  createdAt: Date;
+  updatedAt: Date;
+  emailVerified: Date | null;
+  firebaseUid: string | null;
+};
+
+const dummyDriverList: DriverListItem[] = [
+  {
+    id: "1",
+    name: "Budi Santoso",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    email: "budi.santoso@example.com",
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    emailVerified: new Date('2024-01-01'),
+    firebaseUid: "firebase_uid_1",
+    status: "ACTIVE"
+  },
+  {
+    id: "2",
+    name: "Siti Aisyah",
+    image: "https://randomuser.me/api/portraits/women/32.jpg",
+    email: "siti.aisyah@example.com",
+    createdAt: new Date('2024-01-02'),
+    updatedAt: new Date('2024-01-02'),
+    emailVerified: new Date('2024-01-02'),
+    firebaseUid: "firebase_uid_2",
+    status: "INACTIVE"
+  },
+  {
+    id: "3",
+    name: "Joko Widodo",
+    image: "https://randomuser.me/api/portraits/men/33.jpg",
+    email: "joko.widodo@example.com",
+    createdAt: new Date('2024-01-03'),
+    updatedAt: new Date('2024-01-03'),
+    emailVerified: null,
+    firebaseUid: "firebase_uid_3",
+    status: "ACTIVE"
+  }
 ];
 
-export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
+export function ArmadaDetail({ platNomor, armadaData }: ArmadaDetailProps) {
   // Ganti dengan fetch data by platNomor
-  const [data, setData] = useState<Armada>(dummyData);
+  const [data, setData] = useState<VehicleDetailResult | undefined>(armadaData);
   const router = useRouter();
   const [photoIdx, setPhotoIdx] = useState(0);
   const [photos, setPhotos] = useState(dummyPhotos);
@@ -65,10 +88,14 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
   function handlePhotoPrev() {
     setPhotoIdx((idx) => (idx - 1 + photos.length) % photos.length);
   }
-  function handleAssignDriver(d: any) {
-    setDriver(d);
-    setAssignOpen(false);
+
+  function handleAssignDriver(d: string) {
+    const selectedDriver = dummyDriverList.find(dr => dr.id === d) || null;
+    // setDriver(selectedDriver);
+    // setAssignOpen(false);
+    alert(`Driver dengan ID ${d} dipilih (fungsi assign belum diimplementasi).`);
   }
+
 
   return (
     <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">{/* Improved shadow and spacing */}
@@ -98,52 +125,52 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">{/* Improved spacing */}
         <div>
           <div className="text-gray-500 text-sm">Plat Nomor</div>
-          <div className="font-semibold text-lg">{data.platNomor}</div>
+          <div className="font-semibold text-lg">{data?.licensePlate}</div>
         </div>
         <div>
-          <div className="text-gray-500 text-sm">Tipe</div>
-          <div className="font-semibold text-lg">{data.tipe}</div>
+          <div className="text-gray-500 text-sm">Model</div>
+          <div className="font-semibold text-lg">{data?.model}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Kapasitas</div>
-          <div className="font-semibold text-lg">{data.kapasitas} penumpang</div>
+          <div className="font-semibold text-lg">{data?.capacity} penumpang</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Status</div>
-          <div className={`font-semibold text-lg ${data.status === "Aktif" ? "text-green-600" : data.status === "Maintenance" ? "text-yellow-500" : "text-gray-500"}`}>{data.status}</div>
+          <div className={`font-semibold text-lg ${data?.status === "ACTIVE" ? "text-green-600" : data?.status === "MAINTENANCE" ? "text-yellow-500" : "text-gray-500"}`}>{data?.status}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Tahun</div>
-          <div className="font-semibold text-lg">{data.tahun}</div>
+          <div className="font-semibold text-lg">{data?.year}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Merk</div>
-          <div className="font-semibold text-lg">{data.merk}</div>
+          <div className="font-semibold text-lg">{data?.manufacturer}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Warna</div>
-          <div className="font-semibold text-lg">{data.warna}</div>
+          <div className="font-semibold text-lg">{data?.color}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Nomor Rangka</div>
-          <div className="font-semibold text-lg">{data.nomorRangka}</div>
+          <div className="font-semibold text-lg">{data?.chassisNumber}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Nomor Mesin</div>
-          <div className="font-semibold text-lg">{data.nomorMesin}</div>
+          <div className="font-semibold text-lg">{data?.engineNumber}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Tanggal STNK</div>
-          <div className="font-semibold text-lg">{data.tanggalStnk}</div>
+          <div className="font-semibold text-lg">{data?.stnkDate}</div>
         </div>
         <div>
           <div className="text-gray-500 text-sm">Tanggal KIR</div>
-          <div className="font-semibold text-lg">{data.tanggalKir}</div>
+          <div className="font-semibold text-lg">{data?.kirDate}</div>
         </div>
         <div className="md:col-span-2">
           <div className="text-gray-500 text-sm">Fitur Armada</div>
           <div className="flex flex-wrap gap-2 mt-1">
-            {data.fitur && data.fitur.length > 0 ? data.fitur.map(f => (
+            {data?.features && data?.features.length > 0 ? data?.features.map(f => (
               <span key={f} className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium">{f}</span>
             )) : <span className="text-gray-400">-</span>}
           </div>
@@ -151,7 +178,7 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
       </div>
       <div className="bg-blue-50 rounded p-4 text-blue-700 mb-4">
         <div className="font-semibold mb-1">Catatan</div>
-        <div>{data.catatan || <span className="text-gray-400">-</span>}</div>
+        <div>{data?.notes || <span className="text-gray-400">-</span>}</div>
       </div>
 
       {/* Section Pengemudi yang ditugaskan*/}
@@ -162,16 +189,8 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
             {driver ? "Ganti Pengemudi" : "Tugaskan Pengemudi"}
           </Button>
         </div>
-        {driver ? (
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-            <img src={driver.foto} alt={driver.nama} className="w-16 h-16 rounded-full object-cover border-2 border-blue-200" />
-            <div>
-              <div className="font-semibold text-lg">{driver.nama}</div>
-              <div className="text-gray-600 text-sm">{driver.kontak}</div>
-              <div className="text-gray-500 text-xs">SIM: {driver.sim}</div>
-              <div className={`text-xs font-medium ${driver.status === "Aktif" ? "text-green-600" : "text-gray-400"}`}>{driver.status}</div>
-            </div>
-          </div>
+        {armadaData?.driver ? (
+          <PengemudiYangDitugaskan driver={armadaData.driver} />
         ) : (
           <div className="text-gray-400 italic">Belum ada driver yang di-assign.</div>
         )}
@@ -179,27 +198,61 @@ export function ArmadaDetail({ platNomor }: ArmadaDetailProps) {
 
       {/* Modal Assign Driver */}
       <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContentPengemudi drivers={dummyDriverList} onAssign={handleAssignDriver} />
+      </Dialog>
+
+      {/* Modal Edit Detail Armada dihapus, edit sekarang di halaman baru */}
+    </section>
+  );
+}
+
+
+interface DialogContentPengemudiProps {
+  drivers?: User[] | null;
+  onAssign: (driverId: string) => void;
+}
+const DialogContentPengemudi = ({ drivers, onAssign }: DialogContentPengemudiProps) => {
+    function handleAssignDriver(d: string) {
+    onAssign(d);
+  }
+return (<DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Pilih Driver</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-2">
             {dummyDriverList.map((d, i) => (
               <div key={i} className="flex items-center gap-4 p-2 rounded hover:bg-blue-50 cursor-pointer" onClick={() => handleAssignDriver(d)}>
-                <img src={d.foto} alt={d.nama} className="w-12 h-12 rounded-full object-cover border-2 border-blue-200" />
+                <img src={d.image || "https://via.placeholder.com/150"} alt={d.name || ""} className="w-12 h-12 rounded-full object-cover border-2 border-blue-200" />
                 <div className="flex-1">
-                  <div className="font-semibold">{d.nama}</div>
-                  <div className="text-gray-600 text-xs">{d.kontak}</div>
-                  <div className="text-gray-500 text-xs">SIM: {d.sim}</div>
+                  <div className="font-semibold">{d.name}</div>
+                  <div className="text-gray-600 text-xs">{d.email}</div>
                 </div>
                 <div className={`text-xs font-medium ${d.status === "Aktif" ? "text-green-600" : "text-gray-400"}`}>{d.status}</div>
               </div>
             ))}
           </div>
-        </DialogContent>
-      </Dialog>
+        </DialogContent>)
+}
 
-      {/* Modal Edit Detail Armada dihapus, edit sekarang di halaman baru */}
+const PengemudiYangDitugaskan = ({ driver }: { driver: User | null }) => {
+  return (
+    <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 lg:p-8">
+      <div className="font-semibold text-lg">Pengemudi yang Ditugaskan</div>
+      <div className="mt-4">
+        {driver ? (
+          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+            <img src={driver.image || undefined} alt={driver.name || ""} className="w-16 h-16 rounded-full object-cover border-2 border-blue-200" />
+            <div>
+              <div className="font-semibold text-lg">{driver.name}</div>
+              <div className="text-gray-600 text-sm">{driver.email}</div>
+              <div className="text-gray-500 text-xs">SIM: {driver.name}</div>
+              <div className={`text-xs font-medium ${driver.id === "Aktif" ? "text-green-600" : "text-gray-400"}`}>{driver.status}</div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-gray-400 italic">Belum ada driver yang di-assign.</div>
+        )}
+      </div>
     </section>
   );
 }

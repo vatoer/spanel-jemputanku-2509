@@ -4,6 +4,11 @@ import { prisma } from "@/lib/prisma";
 import type { CreateVehicleData, UpdateVehicleData } from "@/schema/vehicle";
 import type { Prisma, VehicleStatus } from "@prisma/client";
 
+
+export async function sanitizeVehiclePlateNumber(input: string): Promise<string> {
+  return input.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+}
+
 /**
  * Get all vehicles for a tenant with optional filters
  */
@@ -62,6 +67,22 @@ export async function getVehicleById(
   });
 }
 
+export type VehicleByPlateResult = Prisma.VehicleGetPayload<{
+  include: {
+    driver: boolean;
+    vehicleRouteAssignments: {
+      include: { route: true };
+      where: { isActive: true };
+    };
+    serviceRecords: {
+      orderBy: { serviceDate: 'desc' };
+      take: 5;
+    };
+  };
+}>;
+
+export type VehicleDetailResult = VehicleByPlateResult;
+
 /**
  * Get a single vehicle by license plate
  * Matches license plates by removing spaces and case-insensitive comparison
@@ -73,9 +94,9 @@ export async function getVehicleByLicensePlate(
     includeRoutes?: boolean;
     includeServiceRecords?: boolean;
   }
-) {
+): Promise<VehicleByPlateResult | null> {
   // remove all other non-alphanumeric characters for better matching
-  const normalizedInput = licensePlate.replace(/[^A-Z0-9]/g, '').toUpperCase();
+  const normalizedInput = await sanitizeVehiclePlateNumber(licensePlate);
 
   // Alternative approach: Get all vehicles and filter in memory (safer but less efficient for large datasets)
   // Use raw SQL for better performance with proper parameterization
@@ -84,6 +105,8 @@ export async function getVehicleByLicensePlate(
     WHERE UPPER(REPLACE("license_plate", ' ', '')) = ${normalizedInput}
     LIMIT 1
   `;
+
+  console.log('Normalized Input:', normalizedInput, 'Matched Vehicles:', vehicles);
   
   if (vehicles.length === 0) {
     return null;
