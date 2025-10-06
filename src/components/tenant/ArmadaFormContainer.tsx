@@ -1,6 +1,6 @@
 "use client";
 
-import { simpanArmadaBaru } from "@/actions/armada";
+import { simpanArmadaBaru } from "@/actions/armada/index";
 import { ArmadaForm } from "@/components/tenant/ArmadaForm";
 import { CreateVehicleData } from "@/schema/vehicle";
 import { useRouter } from "next/navigation";

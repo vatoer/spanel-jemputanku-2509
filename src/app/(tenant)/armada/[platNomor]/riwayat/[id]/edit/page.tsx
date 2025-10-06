@@ -1,4 +1,4 @@
-import { ArmadaRiwayatEditForm } from "@/components/tenant/ArmadaRiwayatEditForm";
+import { ArmadaRiwayatEditContainer } from "@/components/tenant/ArmadaRiwayatEditContainer";
 import { ArmadaRiwayatEditHeaderActions } from "@/components/tenant/ArmadaRiwayatEditHeaderActions";
 import { ArmadaRiwayatHeaderInfo } from "@/components/tenant/ArmadaRiwayatHeaderInfo";
 import { Metadata } from "next";
@@ -75,10 +75,10 @@ export default async function EditRiwayatPage({ params }: PageProps) {
 
         {/* Form Content */}
         <div className="flex-1 overflow-auto p-4">
-          <div className="max-w-2xl mx-auto">
-            <ArmadaRiwayatEditForm 
+          <div className="max-w-4xl mx-auto">
+            <ArmadaRiwayatEditContainer 
               platNomor={decodedPlatNomor}
-              serviceRecord={serviceRecord}
+              initialData={serviceRecord as any}
             />
           </div>
         </div>
