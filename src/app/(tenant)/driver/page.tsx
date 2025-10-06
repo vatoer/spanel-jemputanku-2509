@@ -1,3 +1,4 @@
+import { ambilDaftarDriver } from "@/actions/driver";
 import { DriverHeader } from "@/components/tenant/DriverHeader";
 import { DriverTableContainer } from "@/components/tenant/DriverTableContainer";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
@@ -6,9 +7,9 @@ import { TenantSidebar } from "@/components/tenant/TenantSidebar";
 export default async function DriverPage() {
   const tenantId = "tenant-transjakarta"; // TODO: Ganti dengan tenantId yang sesuai
   
-  // For now, use dummy data since the service needs to be fixed
-  // TODO: Fix UserService.getDriversByTenant to properly return status field
-  // const driversData = await UserService.getDriversByTenant(tenantId);
+  // Fetch drivers using the new action
+  const driversResult = await ambilDaftarDriver(tenantId);
+  const drivers = driversResult.success ? driversResult.data : [];
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -18,7 +19,7 @@ export default async function DriverPage() {
         <DriverHeader />
         <main className="flex-1 container mx-auto px-4 py-8 flex flex-col gap-6">
           {/* Driver table with stats and filtering - following armada pattern */}
-          <DriverTableContainer />
+          <DriverTableContainer drivers={drivers}/>
         </main>
       </div>
     </div>

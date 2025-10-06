@@ -1,106 +1,22 @@
 "use client";
+import { GetDriversByTenantResult } from "@/types/user.types";
 import { useState } from "react";
 import { DriverTanstackTable } from "./DriverTanstackTable";
 
-// Driver interface matching Prisma User model with DRIVER role
-interface Driver {
-  id: string;
-  name: string | null;
-  email: string;
-  image: string | null;
-  status: string;
-  createdAt: Date;
-  updatedAt: Date;
-  VehicleDriver: any[]; // Assigned vehicles
-  Ride: any[]; // Recent rides
-}
+
 
 interface DriverTableContainerProps {
-  drivers?: Driver[];
+  drivers?: GetDriversByTenantResult[];
 }
 
-// Sample data for drivers
-const dummyDrivers: Driver[] = [
-  {
-    id: "1",
-    name: "Ahmad Wijaya",
-    email: "ahmad.wijaya@example.com",
-    image: null,
-    status: "ACTIVE",
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date(),
-    VehicleDriver: [
-      { id: "v1", licensePlate: "B 1234 CD" }
-    ],
-    Ride: [
-      { id: "r1", status: "COMPLETED", createdAt: new Date() },
-      { id: "r2", status: "COMPLETED", createdAt: new Date() }
-    ]
-  },
-  {
-    id: "2", 
-    name: "Budi Santoso",
-    email: "budi.santoso@example.com",
-    image: null,
-    status: "ACTIVE",
-    createdAt: new Date('2024-02-10'),
-    updatedAt: new Date(),
-    VehicleDriver: [
-      { id: "v2", licensePlate: "B 5678 EF" }
-    ],
-    Ride: [
-      { id: "r3", status: "COMPLETED", createdAt: new Date() },
-      { id: "r4", status: "COMPLETED", createdAt: new Date() },
-      { id: "r5", status: "COMPLETED", createdAt: new Date() }
-    ]
-  },
-  {
-    id: "3",
-    name: "Candra Putra",
-    email: "candra.putra@example.com", 
-    image: null,
-    status: "INACTIVE",
-    createdAt: new Date('2024-01-20'),
-    updatedAt: new Date(),
-    VehicleDriver: [],
-    Ride: []
-  },
-  {
-    id: "4",
-    name: "Dedi Kurniawan",
-    email: "dedi.kurniawan@example.com",
-    image: null,
-    status: "ACTIVE",
-    createdAt: new Date('2024-03-05'),
-    updatedAt: new Date(),
-    VehicleDriver: [
-      { id: "v3", licensePlate: "B 9012 GH" },
-      { id: "v4", licensePlate: "B 3456 IJ" }
-    ],
-    Ride: [
-      { id: "r6", status: "COMPLETED", createdAt: new Date() }
-    ]
-  },
-  {
-    id: "5",
-    name: "Eko Prasetyo",
-    email: "eko.prasetyo@example.com",
-    image: null,
-    status: "SUSPENDED",
-    createdAt: new Date('2024-02-20'),
-    updatedAt: new Date(),
-    VehicleDriver: [],
-    Ride: []
-  }
-];
 
-export function DriverTableContainer({ drivers = dummyDrivers }: DriverTableContainerProps) {
+export function DriverTableContainer({ drivers }: DriverTableContainerProps) {
   const [selectedDrivers, setSelectedDrivers] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [searchTerm, setSearchTerm] = useState("");
 
   // Filter drivers based on status and search term
-  const filteredDrivers = drivers.filter(driver => {
+  const filteredDrivers = drivers?.filter(driver => {
     const matchesStatus = filterStatus === "ALL" || driver.status === filterStatus;
     const matchesSearch = !searchTerm || 
       driver.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
