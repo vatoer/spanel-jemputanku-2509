@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteServiceRecord } from "@/actions/armada/riwayat";
 import { useRouter } from "next/navigation";
 
 interface ArmadaRiwayatDetailHeaderActionsProps {
@@ -28,7 +29,14 @@ export function ArmadaRiwayatDetailHeaderActions({
         console.log("Deleting service record:", serviceRecordId);
         
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // await new Promise(resolve => setTimeout(resolve, 500));
+
+        const result = await deleteServiceRecord(serviceRecordId);
+
+        if (!result.success) {
+          alert(`Error: ${result.error}`);
+          return;
+        }
         
         // Navigate back to riwayat list
         router.push(`/armada/${platNomor}/riwayat`);
