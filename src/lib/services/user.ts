@@ -51,7 +51,14 @@ export class UserService {
           some: { roleId: 'DRIVER' }
         }
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
         VehicleDriver: true,
         Ride: {
           take: 5,
@@ -453,6 +460,75 @@ export class UserService {
       },
       include: {
         UserRole: true
+      }
+    });
+  }
+
+  /**
+   * Get driver detail by ID with all related data
+   */
+  static async getDriverDetailById(driverId: string, tenantId: string) {
+    return await prisma.user.findFirst({
+      where: {
+        id: driverId,
+        UserTenant: {
+          some: { tenantId }
+        },
+        UserRole: {
+          some: { roleId: 'DRIVER' }
+        }
+      },
+      include: {
+        UserRole: {
+          include: {
+            role: true
+          }
+        },
+        UserTenant: {
+          where: { tenantId },
+          include: { tenant: true }
+        },
+        DriverVehicle: {
+          include: {
+            vehicle: {
+              select: {
+                id: true,
+                licensePlate: true,
+                manufacturer: true,
+                model: true,
+                year: true,
+                color: true,
+                status: true
+              }
+            }
+          }
+        },
+        Ride: {
+          take: 10,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            vehicle: {
+              select: {
+                id: true,
+                licensePlate: true,
+                manufacturer: true,
+                model: true
+              }
+            },
+            origin: true,
+            destination: true
+          }
+        },
+        _count: {
+          select: {
+            Ride: {
+              where: {
+                status: 'COMPLETED'
+              }
+            },
+            DriverVehicle: true
+          }
+        }
       }
     });
   }
