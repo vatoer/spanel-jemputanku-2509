@@ -110,14 +110,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           setSyncing(true)
           
-          // Get and store the Firebase ID token
-          const token = await firebaseUser.getIdToken()
-          console.log('Got token, length:', token.length)
-          setCookie('firebase-token', token, 1) // Store for 1 hour
-          
-          // Verify token was set by reading it back
-          const cookieCheck = document.cookie.includes('firebase-token')
-          console.log('Token cookie set successfully:', cookieCheck)
+          // Get and store the Firebase ID token with retry logic
+          let token: string
+          try {
+            token = await firebaseUser.getIdToken()
+            console.log('Got token, length:', token.length)
+            setCookie('firebase-token', token, 1) // Store for 1 hour
+            
+            // Verify token was set by reading it back
+            const cookieCheck = document.cookie.includes('firebase-token')
+            console.log('Token cookie set successfully:', cookieCheck)
+          } catch (tokenError: any) {
+            console.error('Failed to get Firebase token:', tokenError)
+            
+            // Handle specific network errors gracefully
+            if (tokenError.code === 'auth/network-request-failed') {
+              console.log('Network issue detected, will retry token refresh later')
+              // Don't sign out on network errors, just skip this sync cycle
+              return
+            } else {
+              // For other auth errors, sign out
+              throw tokenError
+            }
+          }
           
           // Sync or create user in your database
           console.log('Syncing user to database:', firebaseUser.email)
@@ -141,10 +156,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const errorText = await response.text()
             console.error('Failed to sync user, status:', response.status, 'error:', errorText)
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error syncing user:', error)
-          // If token generation fails, sign out the user
-          await signOut(auth)
+          
+          // Handle different types of errors appropriately
+          if (error?.code === 'auth/network-request-failed') {
+            console.log('Network error during sync, user remains authenticated')
+            // Don't sign out on network errors - let user stay logged in
+          } else if (error?.code?.startsWith('auth/')) {
+            console.log('Authentication error, signing out user')
+            // Only sign out for actual auth errors
+            await signOut(auth)
+          } else {
+            console.log('General error during sync, user remains authenticated')
+            // For general errors (API failures, etc.), keep user logged in
+          }
         } finally {
           setSyncing(false)
         }

@@ -1,8 +1,8 @@
-import { ambilArmadaByPlatNomor } from "@/actions/armada";
 import { ArmadaEditContainer } from "@/components/tenant/ArmadaEditContainer";
 import { TenantBreadcrumb } from "@/components/tenant/TenantBreadcrumb";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
 import { TenantSidebar } from "@/components/tenant/TenantSidebar";
+import { getVehicleByLicensePlate } from "@/lib/services/vehicle";
 import { notFound } from "next/navigation";
 
 
@@ -11,9 +11,10 @@ export default async function EditArmadaPage({ params }: { params: Promise<{ pla
 
   const { platNomor } = await params;
   // Fetch armada data
-  const result = await ambilArmadaByPlatNomor(platNomor);
-  
-  if (!result.success) {
+  const result = await getVehicleByLicensePlate(platNomor);
+  console.log("Fetched vehicle data:", result);
+  if (!result) {
+    console.error("Vehicle data is null or undefined");
     notFound();
   }
 
@@ -33,7 +34,7 @@ export default async function EditArmadaPage({ params }: { params: Promise<{ pla
           <div className="max-w-2xl">
             <ArmadaEditContainer 
               platNomor={platNomor}
-              initialData={result.data}
+              initialData={result}
             />
           </div>
         </main>

@@ -4,13 +4,13 @@ import { ArmadaDetailHeaderInfo } from "@/components/tenant/ArmadaDetailHeaderIn
 import { TenantBreadcrumb } from "@/components/tenant/TenantBreadcrumb";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
 import { TenantSidebar } from "@/components/tenant/TenantSidebar";
-import { getVehicleByLicensePlate } from "@/lib/services/vehicle";
+import { getVehicleDetailByLicensePlate } from "@/lib/services/vehicle";
 
 export default async function ArmadaDetailPage({ params }: { params: Promise<{ platNomor: string }> }) {
 
   const { platNomor } = await params;
 
-  const armadaData = await getVehicleByLicensePlate(platNomor);
+  const armadaData = await getVehicleDetailByLicensePlate(platNomor);
 
   if (!armadaData) {
     return (

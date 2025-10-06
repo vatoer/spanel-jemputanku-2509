@@ -1,5 +1,5 @@
 import { createVehicle, getVehiclesByTenant } from "@/lib/services/vehicle";
-import { CreateVehicleData, createVehicleSchema } from "@/schema/vehicle";
+import { CreateVehicleData, createVehicleSchema, UpdateVehicleData } from "@/schema/vehicle";
 import { Vehicle } from "@prisma/client";
 import { ActionResponse } from "../response";
 
@@ -83,14 +83,38 @@ export const ambilArmadaByPlatNomor = async (platNomor: string): Promise<ActionR
 
 export const updateArmada = async (
   platNomor: string, 
-  data: CreateVehicleData
+  data: UpdateVehicleData
 ): Promise<ActionResponse<Vehicle>> => {
   try {
     const { updateVehicleSchema } = await import("@/schema/vehicle");
     const { getVehicleByLicensePlate, updateVehicle } = await import("@/lib/services/vehicle");
     
     // Validate input data
-    updateVehicleSchema.parse(data);
+    let parsed: any;
+    try {
+      parsed = updateVehicleSchema.parse(data);
+      console.log("Updating vehicle:", platNomor, parsed);
+    } catch (validationError: any) {
+      console.error("Validation error:", validationError);
+      
+      // Extract Zod validation errors for better debugging
+      if (validationError.errors) {
+        console.error("Detailed validation errors:", validationError.errors);
+        const errorMessages = validationError.errors.map((err: any) => 
+          `${err.path.join('.')}: ${err.message}`
+        ).join(', ');
+        
+        return {
+          success: false,
+          error: `Validasi data gagal: ${errorMessages}`
+        };
+      }
+      
+      return {
+        success: false,
+        error: "Data tidak valid"
+      };
+    }
     
     // Get current vehicle
     const currentVehicle = await getVehicleByLicensePlate(platNomor);

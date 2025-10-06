@@ -67,9 +67,38 @@ export async function getVehicleById(
   });
 }
 
-export type VehicleByPlateResult = Prisma.VehicleGetPayload<{
+// Base vehicle type
+export type VehicleBase = Prisma.VehicleGetPayload<{}>;
+
+// Vehicle with driver
+export type VehicleWithDriver = Prisma.VehicleGetPayload<{
+  include: { driver: true };
+}>;
+
+// Vehicle with routes
+export type VehicleWithRoutes = Prisma.VehicleGetPayload<{
   include: {
-    driver: boolean;
+    vehicleRouteAssignments: {
+      include: { route: true };
+      where: { isActive: true };
+    };
+  };
+}>;
+
+// Vehicle with service records
+export type VehicleWithServiceRecords = Prisma.VehicleGetPayload<{
+  include: {
+    serviceRecords: {
+      orderBy: { serviceDate: 'desc' };
+      take: 5;
+    };
+  };
+}>;
+
+// Full vehicle with all includes
+export type VehicleDetailResult = Prisma.VehicleGetPayload<{
+  include: {
+    driver: true;
     vehicleRouteAssignments: {
       include: { route: true };
       where: { isActive: true };
@@ -81,7 +110,8 @@ export type VehicleByPlateResult = Prisma.VehicleGetPayload<{
   };
 }>;
 
-export type VehicleDetailResult = VehicleByPlateResult;
+// Union type for flexible returns
+export type VehicleByPlateResult = VehicleBase | VehicleWithDriver | VehicleWithRoutes | VehicleWithServiceRecords | VehicleDetailResult;
 
 /**
  * Get a single vehicle by license plate
@@ -113,10 +143,10 @@ export async function getVehicleByLicensePlate(
   }
   
   // Now get the full vehicle with includes using the found ID
-  return await prisma.vehicle.findUnique({
+  const result = await prisma.vehicle.findUnique({
     where: { id: vehicles[0].id },
     include: {
-      driver: options?.includeDriver,
+      driver: options?.includeDriver || false,
       vehicleRouteAssignments: options?.includeRoutes ? {
         include: { route: true },
         where: { isActive: true }
@@ -125,6 +155,48 @@ export async function getVehicleByLicensePlate(
         orderBy: { serviceDate: 'desc' },
         take: 5 // Latest 5 records
       } : false
+    }
+  });
+  
+  return result as VehicleByPlateResult | null;
+}
+
+/**
+ * Get vehicle detail by license plate with all includes (for detail page)
+ */
+export async function getVehicleDetailByLicensePlate(
+  licensePlate: string
+): Promise<VehicleDetailResult | null> {
+  // remove all other non-alphanumeric characters for better matching
+  const normalizedInput = await sanitizeVehiclePlateNumber(licensePlate);
+
+  // Alternative approach: Get all vehicles and filter in memory (safer but less efficient for large datasets)
+  // Use raw SQL for better performance with proper parameterization
+  const vehicles = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT id FROM "Vehicle" 
+    WHERE UPPER(REPLACE("license_plate", ' ', '')) = ${normalizedInput}
+    LIMIT 1
+  `;
+
+  console.log('Normalized Input:', normalizedInput, 'Matched Vehicles:', vehicles);
+  
+  if (vehicles.length === 0) {
+    return null;
+  }
+  
+  // Now get the full vehicle with all includes using the found ID
+  return await prisma.vehicle.findUnique({
+    where: { id: vehicles[0].id },
+    include: {
+      driver: true,
+      vehicleRouteAssignments: {
+        include: { route: true },
+        where: { isActive: true }
+      },
+      serviceRecords: {
+        orderBy: { serviceDate: 'desc' },
+        take: 5 // Latest 5 records
+      }
     }
   });
 }

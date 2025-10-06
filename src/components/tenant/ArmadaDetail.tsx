@@ -28,11 +28,12 @@ const dummyDriver = {
 };
 
 // Type for driver selection list - partial User fields needed for UI
-type DriverListItem = Pick<User, 'id' | 'name' | 'email' | 'image' | 'status'> & {
+type DriverListItem = Pick<User, 'id' | 'name' | 'email' | 'image'> & {
   createdAt: Date;
   updatedAt: Date;
   emailVerified: Date | null;
   firebaseUid: string | null;
+  status: "ACTIVE" | "INACTIVE"; // Custom status field for UI
 };
 
 const dummyDriverList: DriverListItem[] = [
@@ -186,7 +187,7 @@ export function ArmadaDetail({ platNomor, armadaData }: ArmadaDetailProps) {
         <div className="flex items-center justify-between mb-2">
           <div className="font-semibold text-blue-700">Pengemudi yang Ditugaskan</div>
           <Button size="sm" variant="outline" onClick={() => setAssignOpen(true)}>
-            {driver ? "Ganti Pengemudi" : "Tugaskan Pengemudi"}
+            {armadaData?.driver ? "Ganti Pengemudi" : "Tugaskan Pengemudi"}
           </Button>
         </div>
         {armadaData?.driver ? (
@@ -221,13 +222,13 @@ return (<DialogContent className="max-w-lg">
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-2">
             {dummyDriverList.map((d, i) => (
-              <div key={i} className="flex items-center gap-4 p-2 rounded hover:bg-blue-50 cursor-pointer" onClick={() => handleAssignDriver(d)}>
+              <div key={i} className="flex items-center gap-4 p-2 rounded hover:bg-blue-50 cursor-pointer" onClick={() => handleAssignDriver(d.id)}>
                 <img src={d.image || "https://via.placeholder.com/150"} alt={d.name || ""} className="w-12 h-12 rounded-full object-cover border-2 border-blue-200" />
                 <div className="flex-1">
                   <div className="font-semibold">{d.name}</div>
                   <div className="text-gray-600 text-xs">{d.email}</div>
                 </div>
-                <div className={`text-xs font-medium ${d.status === "Aktif" ? "text-green-600" : "text-gray-400"}`}>{d.status}</div>
+                <div className={`text-xs font-medium ${d.status === "ACTIVE" ? "text-green-600" : "text-gray-400"}`}>{d.status}</div>
               </div>
             ))}
           </div>
@@ -245,8 +246,8 @@ const PengemudiYangDitugaskan = ({ driver }: { driver: User | null }) => {
             <div>
               <div className="font-semibold text-lg">{driver.name}</div>
               <div className="text-gray-600 text-sm">{driver.email}</div>
-              <div className="text-gray-500 text-xs">SIM: {driver.name}</div>
-              <div className={`text-xs font-medium ${driver.id === "Aktif" ? "text-green-600" : "text-gray-400"}`}>{driver.status}</div>
+              <div className="text-gray-500 text-xs">SIM: Aktif</div>
+              <div className="text-xs font-medium text-green-600">ACTIVE</div>
             </div>
           </div>
         ) : (

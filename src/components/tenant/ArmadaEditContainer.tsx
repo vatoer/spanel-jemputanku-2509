@@ -1,7 +1,7 @@
 "use client";
 
-import { updateArmada } from "@/actions/armada";
-import { CreateVehicleData } from "@/schema/vehicle";
+import { updateArmada } from "@/actions/armada/index";
+import { CreateVehicleData, UpdateVehicleData } from "@/schema/vehicle";
 import { Vehicle } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export function ArmadaEditContainer({ platNomor, initialData }: ArmadaEditContai
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // Transform Vehicle data to CreateVehicleData format for form
+  // Transform Vehicle data to form format
   const formData: Partial<CreateVehicleData> = {
     licensePlate: initialData.licensePlate,
     model: initialData.model,
@@ -29,6 +29,7 @@ export function ArmadaEditContainer({ platNomor, initialData }: ArmadaEditContai
     engineNumber: initialData.engineNumber || "",
     stnkDate: initialData.stnkDate || "",
     kirDate: initialData.kirDate || "",
+    taxDate: initialData.taxDate || "",
     features: initialData.features || [],
     notes: initialData.notes || ""
   };
@@ -37,16 +38,18 @@ export function ArmadaEditContainer({ platNomor, initialData }: ArmadaEditContai
     setIsLoading(true);
     
     try {
-      // Data is already in the correct format, just ensure tenantId is included
-      const updateData: CreateVehicleData = {
+      // Add required fields for update
+      const updateData: UpdateVehicleData = {
         ...data,
+        id: initialData.id, // Required for update
         tenantId: initialData.tenantId, // Keep existing tenantId
       };
 
       const result = await updateArmada(platNomor, updateData);
       
       if (result.success) {
-        router.push(`/armada/${result.data.licensePlate}`);
+        const licensePlate = result.data.licensePlate.replace(/\s+/g, '');
+        router.push(`/armada/${licensePlate}`);
         router.refresh();
       } else {
         alert(`Error: ${result.error}`);
