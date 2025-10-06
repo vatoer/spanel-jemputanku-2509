@@ -1,3 +1,4 @@
+import { ServiceRecordWithVehicle } from "@/lib/services/serviceRecord";
 import { z } from "zod";
 
 // Enums matching Prisma schema
@@ -110,7 +111,7 @@ export const getServiceCategoryLabel = (category: ServiceCategory): string => {
 };
 
 // Conversion functions (following vehicle schema pattern)
-export const toVehicleServiceRecordData = (prismaRecord: any): VehicleServiceRecordData => {
+export const toVehicleServiceRecordData = (prismaRecord: ServiceRecordWithVehicle): VehicleServiceRecordData => {
   return {
     id: prismaRecord.id,
     vehicleId: prismaRecord.vehicleId,

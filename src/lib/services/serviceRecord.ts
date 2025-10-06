@@ -3,18 +3,46 @@ import {
   CreateVehicleServiceRecordData,
   UpdateVehicleServiceRecordData
 } from "@/schema/riwayat";
+import { Prisma } from "@prisma/client";
 
+// Type for service record with vehicle details
+export type ServiceRecordWithVehicle = Prisma.VehicleServiceRecordGetPayload<{
+  include: {
+    vehicle: {
+      select: {
+        id: true;
+        licensePlate: true;
+        model: true;
+        manufacturer: true;
+      };
+    };
+  };
+}>;
+
+// Type for service record with basic vehicle info
+export type ServiceRecordWithBasicVehicle = Prisma.VehicleServiceRecordGetPayload<{
+  include: {
+    vehicle: {
+      select: {
+        id: true,
+        licensePlate: true,
+        model: true,
+      };
+    };
+  };
+}>;
 
 /**
  * Get all service records for a specific vehicle
  */
-export async function getServiceRecordsByVehicleId(vehicleId: string) {
+export async function getServiceRecordsByVehicleId(vehicleId: string): Promise<ServiceRecordWithBasicVehicle[]> {
   return await prisma.vehicleServiceRecord.findMany({
     where: { vehicleId },
     orderBy: { serviceDate: 'desc' },
     include: {
       vehicle: {
         select: {
+          id: true,
           licensePlate: true,
           model: true,
         }
@@ -52,7 +80,7 @@ export async function getServiceRecordsByLicensePlate(licensePlate: string) {
 /**
  * Get a single service record by ID
  */
-export async function getServiceRecordById(id: string) {
+export async function getServiceRecordById(id: string): Promise<ServiceRecordWithVehicle | null> {
   return await prisma.vehicleServiceRecord.findUnique({
     where: { id },
     include: {
@@ -74,7 +102,7 @@ export async function getServiceRecordById(id: string) {
 export async function createServiceRecord(
   vehicleId: string,
   data: CreateVehicleServiceRecordData
-) {
+): Promise<ServiceRecordWithBasicVehicle> {
   return await prisma.vehicleServiceRecord.create({
     data: {
       ...data,
@@ -83,6 +111,7 @@ export async function createServiceRecord(
     include: {
       vehicle: {
         select: {
+          id: true,
           licensePlate: true,
           model: true,
         }
@@ -97,13 +126,14 @@ export async function createServiceRecord(
 export async function updateServiceRecord(
   id: string,
   data: UpdateVehicleServiceRecordData
-) {
+): Promise<ServiceRecordWithBasicVehicle> {
   return await prisma.vehicleServiceRecord.update({
     where: { id },
     data,
     include: {
       vehicle: {
         select: {
+          id: true,
           licensePlate: true,
           model: true,
         }

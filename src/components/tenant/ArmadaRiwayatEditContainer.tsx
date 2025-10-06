@@ -1,6 +1,7 @@
 "use client";
 
-import { CreateVehicleServiceRecordData, VehicleServiceRecordData } from "@/schema/riwayat";
+import { updateServiceRecord } from "@/actions/armada/riwayat";
+import { CreateVehicleServiceRecordData, UpdateVehicleServiceRecordData, VehicleServiceRecordData } from "@/schema/riwayat";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArmadaRiwayatForm } from "./ArmadaRiwayatForm";
@@ -39,9 +40,22 @@ export function ArmadaRiwayatEditContainer({ platNomor, initialData }: ArmadaRiw
         platNomor, 
         data 
       });
+
+      if(!initialData.id) {
+        alert("ID riwayat tidak ditemukan.");
+        return;
+      }
+
+      const updateData: UpdateVehicleServiceRecordData = { ...data, id: initialData.id };
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // await new Promise(resolve => setTimeout(resolve, 1000));
+      const result = await updateServiceRecord(initialData.id, updateData);
+
+      if (!result.success) {
+        alert(`Error: ${result.error}`);
+        return;
+      }
       
       // Navigate back to riwayat detail
       router.push(`/armada/${platNomor}/riwayat/${initialData.id}`);
