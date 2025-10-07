@@ -4,7 +4,7 @@ import { DriverDetailHeaderInfo } from "@/components/tenant/DriverDetailHeaderIn
 import { TenantBreadcrumb } from "@/components/tenant/TenantBreadcrumb";
 import { TenantMobileNav } from "@/components/tenant/TenantMobileNav";
 import { TenantSidebar } from "@/components/tenant/TenantSidebar";
-import { UserService } from "@/lib/services/user";
+import { getDriverDetailById } from "@/lib/services/driver";
 
 export default async function DriverDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -12,7 +12,7 @@ export default async function DriverDetailPage({ params }: { params: Promise<{ i
   // For now, we'll use the same tenant ID as other pages. In a real app, this would come from the session
   const tenantId = "tenant-transjakarta";
   
-  const driverData = await UserService.getDriverDetailById(id, tenantId);
+  const driverData = await getDriverDetailById(id, tenantId);
 
   if (!driverData) {
     return (

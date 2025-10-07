@@ -21,6 +21,10 @@ model User {
   emailVerified DateTime?
   image         String?
   firebaseUid   String?   @unique // Add Firebase UID for linking
+  phone         String? // Phone number
+  address       String? // Full address
+  bloodType     String? // Blood type: A, B, AB, O
+  birthDate     DateTime? // Birth date
 
   status String @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
 
@@ -42,7 +46,43 @@ model User {
   tripDriver   Trip[]        @relation("TripDriver")
   driverShifts DriverShift[] @relation("DriverShifts")
 
+  // Driver-specific relations
+  driverLicenses DriverLicense[] @relation("DriverLicenses")
+
   @@map("users")
+}
+
+// Driver License Information
+model DriverLicense {
+  id               String            @id @default(cuid())
+  driverId         String            @map("driver_id")
+  licenseType      DriverLicenseType @map("license_type")
+  licenseNumber    String            @map("license_number")
+  issuedDate       DateTime          @map("issued_date")
+  expiresAt        DateTime          @map("expires_at")
+  issuingAuthority String?           @map("issuing_authority") // e.g., "Polda Metro Jaya"
+  isActive         Boolean           @default(true) @map("is_active")
+  notes            String? // Additional notes or restrictions
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  driver User @relation(fields: [driverId], references: [id], onDelete: Cascade, name: "DriverLicenses")
+
+  @@unique([driverId, licenseType]) // One driver can have only one license per type
+  @@unique([licenseNumber]) // License numbers must be unique globally
+  @@map("driver_licenses")
+}
+
+// Enum for Indonesian Driver License Types
+enum DriverLicenseType {
+  A // Motorcycle up to 250cc
+  A1 // Motorcycle up to 125cc (new regulation)
+  B // Car and light vehicle
+  B1 // Car for personal use only
+  B2 // Car and trailer, small truck
+  C // Heavy truck and bus
+  D // Special vehicles (tractor, heavy machinery)
 }
 
 model Account {

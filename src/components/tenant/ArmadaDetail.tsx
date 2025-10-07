@@ -10,76 +10,25 @@ import { FaChevronLeft, FaChevronRight, FaPlus } from "react-icons/fa";
 type ArmadaDetailProps = {
   platNomor: string;
   armadaData?: VehicleDetailResult; // Optional armadaData prop
+  driver?: User | null;
+  drivers?: User[] | null;
 };
-
 
 const dummyPhotos = [
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80", // bus di pegunungan
-  "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80", // bus malam hari
-  "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80"  // mobil van
+  "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1519999482648-25049ddd37b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?auto=format&fit=crop&w=800&q=80"
 ];
 
-const dummyDriver = {
-  nama: "Budi Santoso",
-  foto: "https://randomuser.me/api/portraits/men/32.jpg",
-  kontak: "0812-3456-7890",
-  sim: "B1 Aktif",
-  status: "Aktif"
-};
 
-// Type for driver selection list - partial User fields needed for UI
-type DriverListItem = Pick<User, 'id' | 'name' | 'email' | 'image'> & {
-  createdAt: Date;
-  updatedAt: Date;
-  emailVerified: Date | null;
-  firebaseUid: string | null;
-  status: "ACTIVE" | "INACTIVE"; // Custom status field for UI
-};
-
-const dummyDriverList: DriverListItem[] = [
-  {
-    id: "1",
-    name: "Budi Santoso",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
-    email: "budi.santoso@example.com",
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
-    emailVerified: new Date('2024-01-01'),
-    firebaseUid: "firebase_uid_1",
-    status: "ACTIVE"
-  },
-  {
-    id: "2",
-    name: "Siti Aisyah",
-    image: "https://randomuser.me/api/portraits/women/32.jpg",
-    email: "siti.aisyah@example.com",
-    createdAt: new Date('2024-01-02'),
-    updatedAt: new Date('2024-01-02'),
-    emailVerified: new Date('2024-01-02'),
-    firebaseUid: "firebase_uid_2",
-    status: "INACTIVE"
-  },
-  {
-    id: "3",
-    name: "Joko Widodo",
-    image: "https://randomuser.me/api/portraits/men/33.jpg",
-    email: "joko.widodo@example.com",
-    createdAt: new Date('2024-01-03'),
-    updatedAt: new Date('2024-01-03'),
-    emailVerified: null,
-    firebaseUid: "firebase_uid_3",
-    status: "ACTIVE"
-  }
-];
-
-export function ArmadaDetail({ platNomor, armadaData }: ArmadaDetailProps) {
+export function ArmadaDetail({ platNomor, armadaData, driver, drivers }: ArmadaDetailProps) {
   // Ganti dengan fetch data by platNomor
   const [data, setData] = useState<VehicleDetailResult | undefined>(armadaData);
   const router = useRouter();
   const [photoIdx, setPhotoIdx] = useState(0);
   const [photos, setPhotos] = useState(dummyPhotos);
   const [assignOpen, setAssignOpen] = useState(false);
-  const [driver, setDriver] = useState(dummyDriver);
+  // const [driver, setDriver] = useState(dummyDriver);
 
 
 
@@ -91,7 +40,7 @@ export function ArmadaDetail({ platNomor, armadaData }: ArmadaDetailProps) {
   }
 
   function handleAssignDriver(d: string) {
-    const selectedDriver = dummyDriverList.find(dr => dr.id === d) || null;
+    // const selectedDriver = drivers.find(dr => dr.id === d) || null;
     // setDriver(selectedDriver);
     // setAssignOpen(false);
     alert(`Driver dengan ID ${d} dipilih (fungsi assign belum diimplementasi).`);
@@ -199,7 +148,7 @@ export function ArmadaDetail({ platNomor, armadaData }: ArmadaDetailProps) {
 
       {/* Modal Assign Driver */}
       <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
-        <DialogContentPengemudi drivers={dummyDriverList} onAssign={handleAssignDriver} />
+        <DialogContentPengemudi drivers={drivers} onAssign={handleAssignDriver} />
       </Dialog>
 
       {/* Modal Edit Detail Armada dihapus, edit sekarang di halaman baru */}
@@ -221,7 +170,7 @@ return (<DialogContent className="max-w-lg">
             <DialogTitle>Pilih Driver</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-2">
-            {dummyDriverList.map((d, i) => (
+            {drivers?.map((d, i) => (
               <div key={i} className="flex items-center gap-4 p-2 rounded hover:bg-blue-50 cursor-pointer" onClick={() => handleAssignDriver(d.id)}>
                 <img src={d.image || "https://via.placeholder.com/150"} alt={d.name || ""} className="w-12 h-12 rounded-full object-cover border-2 border-blue-200" />
                 <div className="flex-1">

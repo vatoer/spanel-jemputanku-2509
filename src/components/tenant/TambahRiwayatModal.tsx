@@ -2,9 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { MultiSelectCombobox } from "@/components/ui/multi-select-combobox";
+
 import { Textarea } from "@/components/ui/textarea";
-import { riwayatSchema } from "@/schema/riwayat";
+import { createVehicleServiceRecordSchema } from "@/schema/riwayat";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
@@ -23,7 +23,7 @@ export function TambahRiwayatModal({ open, onClose, onSubmit }: TambahRiwayatMod
     control,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(riwayatSchema),
+    resolver: zodResolver(createVehicleServiceRecordSchema),
     mode: "onTouched",
   });
 
@@ -33,18 +33,10 @@ export function TambahRiwayatModal({ open, onClose, onSubmit }: TambahRiwayatMod
   };
 
   const submitHandler = async (data: any) => {
-    // Convert jenis to array (for multi-select)
-    const jenis = Array.isArray(data.jenis)
-      ? data.jenis
-      : typeof data.jenis === "string"
-        ? Array.from(document.querySelectorAll('select[name="jenis"] option:checked')).map(opt => (opt as HTMLOptionElement).value)
-        : [];
-    // Convert fileBukti to array of File
-    let fileBukti: File[] = [];
-    if (data.fileBukti && data.fileBukti instanceof FileList) {
-      fileBukti = Array.from(data.fileBukti);
-    }
-    onSubmit({ ...data, jenis, fileBukti });
+    // File upload will be implemented later
+    const { files, ...serviceData } = data;
+    
+    onSubmit(serviceData);
     handleClose();
   };
 
@@ -59,58 +51,86 @@ export function TambahRiwayatModal({ open, onClose, onSubmit }: TambahRiwayatMod
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block font-medium mb-1">Tanggal</label>
-              <Input type="date" {...register("tanggal")} />
-              {errors.tanggal?.message && <p className="text-red-500 text-xs mt-1">{String(errors.tanggal.message)}</p>}
+              <Input type="date" {...register("serviceDate")} />
+              {errors.serviceDate?.message && <p className="text-red-500 text-xs mt-1">{String(errors.serviceDate.message)}</p>}
             </div>
-            <div className="flex flex-col gap-1 max-w-xs mx-auto w-full relative">
+            <div>
+              <label className="block font-medium mb-1">Jenis Pemeliharaan</label>
               <Controller
-                name="jenis"
+                name="type"
                 control={control}
                 render={({ field }) => (
-                  <MultiSelectCombobox
-                    label="Jenis"
-                    options={[
-                      { value: "Service Berkala", label: "Service Berkala" },
-                      { value: "Ganti Oli", label: "Ganti Oli" },
-                      { value: "Tune Up", label: "Tune Up" },
-                      { value: "Ganti Ban", label: "Ganti Ban" },
-                      { value: "Ganti Kampas Rem", label: "Ganti Kampas Rem" },
-                      { value: "Perbaikan Mesin", label: "Perbaikan Mesin" },
-                      { value: "Perbaikan AC", label: "Perbaikan AC" },
-                      { value: "Perbaikan Body/Karoseri", label: "Perbaikan Body/Karoseri" },
-                      { value: "Penggantian Aki", label: "Penggantian Aki" },
-                      { value: "Perbaikan Kelistrikan", label: "Perbaikan Kelistrikan" },
-                      { value: "Lainnya", label: "Lainnya" },
-                    ]}
-                    value={field.value || []}
-                    onChange={field.onChange}
-                    placeholder="Pilih jenis pemeliharaan/perbaikan"
-                    error={errors.jenis?.message as string}
-                  />
+                  <select 
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Pilih jenis pemeliharaan</option>
+                    <option value="MAINTENANCE">Pemeliharaan</option>
+                    <option value="REPAIR">Perbaikan</option>
+                    <option value="INSPECTION">Inspeksi</option>
+                    <option value="UPGRADE">Upgrade</option>
+                  </select>
                 )}
               />
+              {errors.type?.message && <p className="text-red-500 text-xs mt-1">{String(errors.type.message)}</p>}
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Kategori</label>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <select 
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Pilih kategori</option>
+                    <option value="ENGINE">Mesin</option>
+                    <option value="TRANSMISSION">Transmisi</option>
+                    <option value="BRAKES">Rem</option>
+                    <option value="TIRES">Ban</option>
+                    <option value="ELECTRICAL">Kelistrikan</option>
+                    <option value="AC_HEATING">AC/Pemanas</option>
+                    <option value="BODY">Body/Karoseri</option>
+                    <option value="INTERIOR">Interior</option>
+                    <option value="SAFETY">Keamanan</option>
+                    <option value="GENERAL">Umum</option>
+                  </select>
+                )}
+              />
+              {errors.category?.message && <p className="text-red-500 text-xs mt-1">{String(errors.category.message)}</p>}
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Judul</label>
+              <Input placeholder="Judul pemeliharaan/perbaikan" {...register("title")} />
+              {errors.title?.message && <p className="text-red-500 text-xs mt-1">{String(errors.title.message)}</p>}
             </div>
             <div>
               <label className="block font-medium mb-1">Biaya (Rp)</label>
-              <Input type="number" min={0} {...register("biaya")} />
-              {errors.biaya?.message && <p className="text-red-500 text-xs mt-1">{String(errors.biaya.message)}</p>}
+              <Input type="number" min={0} {...register("cost")} />
+              {errors.cost?.message && <p className="text-red-500 text-xs mt-1">{String(errors.cost.message)}</p>}
             </div>
             <div>
               <label className="block font-medium mb-1">Tempat Service</label>
-              <Input placeholder="Nama bengkel / tempat service" {...register("tempatService")} />
-              {errors.tempatService?.message && <p className="text-red-500 text-xs mt-1">{String(errors.tempatService.message)}</p>}
+              <Input placeholder="Nama bengkel / tempat service" {...register("vendor")} />
+              {errors.vendor?.message && <p className="text-red-500 text-xs mt-1">{String(errors.vendor.message)}</p>}
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Kilometer</label>
+              <Input type="number" min={0} placeholder="Kilometer saat service" {...register("mileage")} />
+              {errors.mileage?.message && <p className="text-red-500 text-xs mt-1">{String(errors.mileage.message)}</p>}
             </div>
           </div>
           <div>
             <label className="block font-medium mb-1">Keterangan</label>
-            <Textarea placeholder="Keterangan" {...register("keterangan")} />
-            {errors.keterangan?.message && <p className="text-red-500 text-xs mt-1">{String(errors.keterangan.message)}</p>}
+            <Textarea placeholder="Keterangan" {...register("description")} />
+            {errors.description?.message && <p className="text-red-500 text-xs mt-1">{String(errors.description.message)}</p>}
           </div>
           <div>
             <label className="block font-medium mb-1">Upload Bukti (PDF/Gambar)</label>
-            <Input type="file" accept="application/pdf,image/*" multiple {...register("fileBukti")} />
-            {errors.fileBukti?.message && <p className="text-red-500 text-xs mt-1">{String(errors.fileBukti.message)}</p>}
-            <p className="text-xs text-gray-500 mt-1">Bisa upload lebih dari satu file sekaligus.</p>
+            <Input type="file" accept="application/pdf,image/*" multiple {...register("files")} />
+            {errors.files?.message && <p className="text-red-500 text-xs mt-1">{String(errors.files.message)}</p>}
+            <p className="text-xs text-gray-500 mt-1">Bisa upload lebih dari satu file sekaligus. (akan diimplementasikan nanti)</p>
           </div>
           <DialogFooter className="pt-2">
             <Button type="button" variant="outline" onClick={handleClose} disabled={isSubmitting}>Batal</Button>

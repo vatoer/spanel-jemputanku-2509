@@ -6,7 +6,7 @@ import { DriverTanstackTable } from "./DriverTanstackTable";
 
 
 interface DriverTableContainerProps {
-  drivers?: GetDriversByTenantResult[];
+  drivers?: GetDriversByTenantResult;
 }
 
 
@@ -52,10 +52,10 @@ export function DriverTableContainer({ drivers }: DriverTableContainerProps) {
   };
 
   const getStatsData = () => {
-    const total = drivers.length;
-    const active = drivers.filter(d => d.status === "ACTIVE").length;
-    const inactive = drivers.filter(d => d.status === "INACTIVE").length;
-    const suspended = drivers.filter(d => d.status === "SUSPENDED").length;
+    const total = drivers?.length;
+    const active = drivers?.filter(d => d.status === "ACTIVE").length;
+    const inactive = drivers?.filter(d => d.status === "INACTIVE").length;
+    const suspended = drivers?.filter(d => d.status === "SUSPENDED").length;
     
     return { total, active, inactive, suspended };
   };

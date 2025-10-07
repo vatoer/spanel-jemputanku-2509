@@ -9,6 +9,7 @@ import {
   createVehicleServiceRecordSchema,
   updateVehicleServiceRecordSchema
 } from "@/schema/riwayat";
+import { GetUpcomingServicesByLicensePlateResult } from "@/types/vehicle-service-record.types";
 import { revalidatePath } from "next/cache";
 import { ActionResponse } from "../response";
 
@@ -265,16 +266,15 @@ export async function deleteServiceRecord(
 export async function getUpcomingServicesByPlate(
   licensePlate: string,
   daysAhead: number = 30
-): Promise<ActionResponse<VehicleServiceRecordData[]>> {
+): Promise<ActionResponse<GetUpcomingServicesByLicensePlateResult>> {
   try {
     const upcomingServices = await serviceRecordService.getUpcomingServicesByLicensePlate(
       licensePlate,
       daysAhead
     );
-
     return {
       success: true,
-      data: upcomingServices as VehicleServiceRecord[]
+      data: upcomingServices
     };
   } catch (error) {
     console.error("Error fetching upcoming services:", error);

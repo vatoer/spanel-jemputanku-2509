@@ -22,6 +22,7 @@ export const vehicleServiceRecordSchema = z.object({
   mileage: z.coerce.number().min(0, "Kilometer harus 0 atau lebih").optional(),
   status: ServiceStatusEnum.default("COMPLETED"),
   nextDueDate: z.coerce.date().optional(),
+  files: z.array(z.instanceof(File)).optional(),
   vendor: z.string().optional(),
   invoice: z.string().optional(),
   createdAt: z.date().optional(),

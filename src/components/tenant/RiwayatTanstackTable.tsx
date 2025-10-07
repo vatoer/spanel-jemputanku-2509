@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import type { VehicleServiceRecord } from "@/schema/riwayat";
+import { ServiceRecord } from "@/lib/services/serviceRecord";
 import { serviceCategoryLabels, serviceStatusLabels, serviceTypeLabels } from "@/schema/riwayat";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 
 interface RiwayatTanstackTableProps {
-  data: VehicleServiceRecord[];
+  data: ServiceRecord[];
   platNomor?: string;
 }
 
@@ -22,8 +22,9 @@ export function RiwayatTanstackTable({ data, platNomor }: RiwayatTanstackTablePr
     }).format(amount);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("id-ID", {
+  const formatDate = (date: string | Date) => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString("id-ID", {
       year: "numeric",
       month: "short",
       day: "numeric"
@@ -61,20 +62,20 @@ export function RiwayatTanstackTable({ data, platNomor }: RiwayatTanstackTablePr
     );
   };
 
-  const handleRowClick = (record: VehicleServiceRecord) => {
+  const handleRowClick = (record: ServiceRecord) => {
     if (platNomor) {
       router.push(`/armada/${platNomor}/riwayat/${record.id}`);
     }
   };
 
-  const handleViewDetail = (e: React.MouseEvent, record: VehicleServiceRecord) => {
+  const handleViewDetail = (e: React.MouseEvent, record: ServiceRecord) => {
     e.stopPropagation(); // Prevent row click
     if (platNomor) {
       router.push(`/armada/${platNomor}/riwayat/${record.id}`);
     }
   };
 
-  const columns: ColumnDef<VehicleServiceRecord>[] = [
+  const columns: ColumnDef<ServiceRecord>[] = [
     {
       header: "Tanggal",
       accessorKey: "serviceDate",

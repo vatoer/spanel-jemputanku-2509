@@ -3,7 +3,11 @@ import {
   CreateVehicleServiceRecordData,
   UpdateVehicleServiceRecordData
 } from "@/schema/riwayat";
+import { GetUpcomingServicesByLicensePlateResult } from "@/types/vehicle-service-record.types";
 import { Prisma } from "@prisma/client";
+
+// Type for basic service record without relations
+export type ServiceRecord = Prisma.VehicleServiceRecordGetPayload<{}>;
 
 // Type for service record with vehicle details
 export type ServiceRecordWithVehicle = Prisma.VehicleServiceRecordGetPayload<{
@@ -157,7 +161,7 @@ export async function deleteServiceRecord(id: string) {
 export async function getUpcomingServicesByLicensePlate(
   licensePlate: string,
   daysAhead: number = 30
-) {
+): Promise<GetUpcomingServicesByLicensePlateResult> {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() + daysAhead);
 

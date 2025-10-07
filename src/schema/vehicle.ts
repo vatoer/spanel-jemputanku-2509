@@ -47,13 +47,6 @@ export type VehicleData = z.infer<typeof vehicleSchema>;
 export type CreateVehicleData = z.infer<typeof createVehicleSchema>;
 export type UpdateVehicleData = z.infer<typeof updateVehicleSchema>;
 
-// Backward compatibility exports (untuk existing code yang masih menggunakan Armada)
-export const armadaSchema = vehicleSchema;
-export const createArmadaSchema = createVehicleSchema;
-export const updateArmadaSchema = updateVehicleSchema;
-export type Armada = VehicleData;
-export type CreateArmada = CreateVehicleData;
-export type UpdateArmada = UpdateVehicleData;
 
 // Status helpers (simplified since names match)
 export const getStatusLabel = (status: "ACTIVE" | "MAINTENANCE" | "INACTIVE"): string => {

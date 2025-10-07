@@ -1,18 +1,18 @@
 "use client";
 import { RiwayatTanstackTable } from "@/components/tenant/RiwayatTanstackTable";
-import { VehicleServiceRecord } from "@/schema/riwayat";
+import { ServiceRecord } from "@/lib/services/serviceRecord";
 import * as React from "react";
 
 export interface RiwayatContainerProps {
   platNomor: string;
-  riwayatData?: VehicleServiceRecord[];
-  onAddRiwayat?: (data: VehicleServiceRecord) => void;
+  riwayatData?: ServiceRecord[];
+  onAddRiwayat?: (data: ServiceRecord) => void;
 }
 
 export function RiwayatContainer({ platNomor, riwayatData, onAddRiwayat }: RiwayatContainerProps) {
-  const [riwayat, setRiwayat] = React.useState<VehicleServiceRecord[]>(riwayatData || []);
-    
-  const handleTambahRiwayat = (data: VehicleServiceRecord) => {
+  const [riwayat, setRiwayat] = React.useState<ServiceRecord[]>(riwayatData || []);
+
+  const handleTambahRiwayat = (data: ServiceRecord) => {
     setRiwayat(prev => [...prev, data]);
     
     // Notify parent jika ada callback

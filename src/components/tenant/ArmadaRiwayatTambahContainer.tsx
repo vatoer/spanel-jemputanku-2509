@@ -1,6 +1,6 @@
 "use client";
 
-import { VehicleServiceRecordFormValues } from "@/schema/riwayat";
+import { CreateVehicleServiceRecordData } from "@/schema/riwayat";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArmadaRiwayatForm } from "./ArmadaRiwayatForm";
@@ -13,7 +13,7 @@ export function ArmadaRiwayatTambahContainer({ platNomor }: ArmadaRiwayatTambahC
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  async function handleSubmit(data: VehicleServiceRecordFormValues) {
+  async function handleSubmit(data: CreateVehicleServiceRecordData) {
     setIsLoading(true);
     
     try {
